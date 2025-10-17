@@ -1,0 +1,297 @@
+    :root {
+      --main-bg: rgba(244, 244, 244, 1);
+      --main: rgba(9, 16, 42, 1);
+      --bg: #fffefc;
+      --na: rgba(64, 64, 64, 1);
+      --pass: #9ce639;
+      --fail: #E63946;
+      --blue: rgba(46,0,184,1);
+      --blue-088: rgba(46,0,184,0.88);
+      --border: rgba(46,0,184,1);
+    }
+
+    body {
+      font-family: 'Intel One Mono', 'JetBrains Mono', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      -webkit-font-smoothing: antialiased;
+      text-rendering: optimizeLegibility;
+      background-color: var(--main-bg);
+      color: var(--main);
+      padding: 10px;
+      font-size: 0.9rem;
+      margin: 0;
+      background-size: 400% 400%;
+    }
+
+    @keyframes gradient {
+      0% {
+        background-position: 0% 50%;
+      }
+
+      50% {
+        background-position: 100% 50%;
+      }
+
+      100% {
+        background-position: 0% 50%;
+      }
+    }
+
+    .grid-layout {
+      font-size: 11px;
+    }
+
+    .line {
+      border-bottom: 1px dashed var(--border);
+    }
+
+    header {
+      grid-template-columns: 1fr 5fr;
+      padding: 0;
+      font-size: 18px;
+      display: grid;
+      justify-content: start;
+      align-items: center;
+      column-gap: 10px;
+      margin-bottom: 10px;
+    }
+
+    header .title {
+      display: grid;
+      grid-template-columns: auto auto;
+      align-items: center;
+      gap: 0px;
+    }
+
+    header .legend {
+      font-size: 11px;
+      justify-self: end;
+      display: grid;
+      grid-template-columns: auto auto;
+      gap: 10px;
+    }
+
+    header svg {
+      width: 100px;
+      height: auto;
+      vertical-align: middle;
+    }
+
+    footer {
+      padding: 10px;
+      text-align: center;
+    }
+
+    .grid-layout {
+      display: grid;
+      grid-template-columns: 1fr 3fr 1fr;
+      grid-template-rows: 1fr;
+      grid-column-gap: 10px;
+      grid-row-gap: 10px;
+      align-items: start;
+    }
+
+    #idl {
+      border-radius: 5px;
+      display: grid;
+      grid-template-columns: 1fr;
+      grid-row-gap: 10px;
+    }
+
+    #idl>div:hover {
+      background-color: var(--b4);
+    }
+
+    .g2>div {
+      color: #fff;
+      display: grid;
+      grid-template-columns: 15fr 1fr;
+      padding: 10px 10px;
+      align-items: center;
+      border-radius: 5px;
+      background-image: linear-gradient(135deg,  rgba(0,122,184,1) 1%, var(--blue-088) 80.5%);
+      background-size: 400% 400%;
+	    animation: gradient 15s ease infinite;
+      box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 6px -1px, rgba(0, 0, 0, 0.06) 0px 2px 4px -1px;
+    }
+
+    @keyframes gradient {
+      0% {
+        background-position: 0% 50%;
+      }
+      50% {
+        background-position: 100% 50%;
+      }
+      100% {
+        background-position: 0% 50%;
+      }
+    }
+
+
+    .g2>div:last-child {
+      border-bottom: none;
+    }
+
+    .g2>div div {
+      padding: 1px 10px;
+    }
+
+    .g2>div div.interface {
+      padding-bottom: 5px;
+      padding-left: 0px;
+    }
+
+    .g2>div div:nth-child(even) {
+      justify-self: center;
+      padding: 1px 0px;
+    }
+
+    header .legend span,
+    .g2>div div:nth-child(even) span,
+    #op-support-limits span {
+      display: inline-block;
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+    }
+
+    span.na {
+      background-color: var(--na);
+    }
+
+    span.pass {
+      background-color: var(--pass);
+      border:1px solid green;
+    }
+
+    span.fail {
+      background-color: var(--fail);
+      border:1px solid pink;
+    }
+
+    #op-support-limits {
+      padding: 0;
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+    }
+
+    #op-support-limits>div {
+      border-radius: 5px;
+      padding: 10px;
+    }
+
+    #op-support-limits .row {
+      display: grid;
+      grid-template-columns: 2fr 2fr 2fr repeat(2, 4fr) 2fr;
+    }
+
+    #op-support-limits .row div {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .float,
+    .rank-range {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      justify-items: center;
+      align-items: center;
+    }
+
+    .float,
+    .int,
+    .uint,
+    .rank-range {
+      border-left: 1px dashed var(--border);
+    }
+
+    .int,
+    .uint {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr 1fr;
+      align-items: center;
+    }
+
+    .float div,
+    .rank-range div,
+    .int div,
+    .uint div {
+      justify-self: center;
+ 
+    }
+
+    .float div:last-child,
+    .rank-range div:last-child,
+    .int div:last-child,
+    .uint div:last-child {
+      border-right: none;
+    }
+
+    /* grid-template-columns: repeat(14, minmax(60px, 1fr)); */
+
+    /* #op-support-limits .row div {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      text-align: center;
+      width: 57px;
+      border-right: 1px solid var(--border-03);
+      padding: 2px 4px;
+    } */
+
+    #op-support-limits .row>div:first-child {
+      padding: 0 4px;
+    }
+
+    .header {
+      padding-bottom: 4px;
+      color: var(--blue);
+    }
+
+    #cpu.fail,
+    #gpu.fail,
+    #npu.fail {
+      color: var(--fail);
+    }
+
+    .visibility-hidden {
+      visibility: hidden;
+    }
+
+    .header {
+      text-align: center;
+    }
+
+    #cpu, #gpu, #npu {
+      background-image: linear-gradient(135deg,  rgba(255, 255, 255, 0.88) 1%, rgba(255, 255, 255, 1) 80.5%);
+      background-size: 400% 400%;
+      box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 6px -1px, rgba(0, 0, 0, 0.06) 0px 2px 4px -1px;
+    }
+
+    #cpu .row>div.header:first-child {
+      border-radius: 5px;
+    }
+
+    #gpu .row>div.header:first-child {
+      border-radius: 5px;
+    }
+
+    #npu .row>div.header:first-child {
+      border-radius: 5px;
+    }
+
+    #links {
+      border-radius: 5px;
+      background-color: #fff;
+      padding: 10px;
+      margin-bottom: 10px;
+      box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 6px -1px, rgba(0, 0, 0, 0.06) 0px 2px 4px -1px;
+    }
+
+    #links a {
+      color: var(--blue);
+      text-decoration: dashed;
+    }
+
+    
