@@ -7,39 +7,39 @@ const tests = [
     test: () => 'ml' in navigator
   },
   // ML interface
-  // {
-  //   interface: 'ML',
-  //   name: 'MLContextOptions.powerPreference: default',
-  //   test: async () => {
-  //     if (!navigator.ml) return false;
-  //     try {
-  //       const ctx = await navigator.ml.createContext({ powerPreference: "default" });
-  //       return !!ctx;
-  //     } catch { return false; }
-  //   }
-  // },
-  // {
-  //   interface: 'ML',
-  //   name: 'MLContextOptions.powerPreference: high-performance',
-  //   test: async () => {
-  //     if (!navigator.ml) return false;
-  //     try {
-  //       const ctx = await navigator.ml.createContext({ powerPreference: "high-performance" });
-  //       return !!ctx;
-  //     } catch { return false; }
-  //   }
-  // },
-  // {
-  //   interface: 'ML',
-  //   name: 'MLContextOptions.powerPreference: low-power',
-  //   test: async () => {
-  //     if (!navigator.ml) return false;
-  //     try {
-  //       const ctx = await navigator.ml.createContext({ powerPreference: "low-power" });
-  //       return !!ctx;
-  //     } catch { return false; }
-  //   }
-  // },
+  {
+    interface: 'ML',
+    name: 'powerPreference: default',
+    test: async () => {
+      if (!navigator.ml) return false;
+      try {
+        const ctx = await navigator.ml.createContext({ powerPreference: "default" });
+        return !!ctx;
+      } catch { return false; }
+    }
+  },
+  {
+    interface: 'ML',
+    name: 'powerPreference: high-performance',
+    test: async () => {
+      if (!navigator.ml) return false;
+      try {
+        const ctx = await navigator.ml.createContext({ powerPreference: "high-performance" });
+        return !!ctx;
+      } catch { return false; }
+    }
+  },
+  {
+    interface: 'ML',
+    name: 'powerPreference: low-power',
+    test: async () => {
+      if (!navigator.ml) return false;
+      try {
+        const ctx = await navigator.ml.createContext({ powerPreference: "low-power" });
+        return !!ctx;
+      } catch { return false; }
+    }
+  },
   {
     interface: 'ML',
     name: 'createContext',
@@ -306,32 +306,84 @@ async function runIdlTests() {
       if (!supported) {
         resultElement = `<span class="fail"></span>`;
       }
-      div.innerHTML += `<div>${t.name}</div><div>${resultElement}</div>`;
+      let testName = t.name;
+      if (testName.indexOf('element-wise binary') > -1) {
+        testName = testName.replaceAll('element-wise binary', 'ewb');
+      }
+      if (testName.indexOf('element-wise unary') > -1) {
+        testName = testName.replaceAll('element-wise unary', 'ewu');
+      }
+      if (testName.indexOf('element-wise logical') > -1) {
+        testName = testName.replaceAll('element-wise logical', 'ewl');
+      }
+      if (testName.indexOf('reduction') > -1) {
+        testName = testName.replaceAll('reduction', 'red');
+      }
+      div.innerHTML += `<div title="${t.name}">${testName}</div><div>${resultElement}</div>`;
     }
     idlDiv.appendChild(div);
   }
 }
 
+// Fill preferredInputLayout and maxTensorByteLength in the #next section
+function fillDeviceFeatures(device, json) {
+  if (json.preferredInputLayout !== undefined) {
+    const el = document.getElementById(`${device}-preferredInputLayout`);
+    if (el) el.textContent = json.preferredInputLayout;
+  }
+  if (json.maxTensorByteLength !== undefined) {
+    const el = document.getElementById(`${device}-maxTensorByteLength`);
+    if (el) el.textContent = json.maxTensorByteLength;
+  }
+}
+
+function fillSpecialRows(prefix, data) {
+  // Fill dataTypes
+  if (Array.isArray(data.dataTypes)) {
+    for (const dt of data.dataTypes) {
+      const el = document.getElementById(`${prefix}-dataType-${dt}`);
+      if (el) el.innerHTML = '<span class="pass"></span>';
+    }
+  }
+  // Fill rankRange
+  if (data.rankRange) {
+    if ('min' in data.rankRange) {
+      const el = document.getElementById(`${prefix}-rankRange-min`);
+      if (el) el.innerHTML = data.rankRange.min;
+    }
+    if ('max' in data.rankRange) {
+      const el = document.getElementById(`${prefix}-rankRange-max`);
+      if (el) el.innerHTML = data.rankRange.max;
+    }
+  }
+}
 
 const updateOpSupportLimits = (device, json) => {
-  
+  // Fill device features in #next section
+  fillDeviceFeatures(device, json);
   // Supported data types for columns
   const floatTypes = ['float16', 'float32'];
   const intTypes = ['int32', 'int4', 'int64', 'int8'];
   const uintTypes = ['uint32', 'uint4', 'uint64', 'uint8'];
   // Helper to fill a cell by id
   function fillCell(id) {
-    const el = $("#"+id);
+    const el = $("#" + id);
     if (el) el.innerHTML = '<span class="pass"></span>';
   }
   // Helper to fill min/max
   function fillRank(id, value) {
-    const el = $("#"+id);
+    const el = $("#" + id);
     if (el) el.innerHTML = value;
   }
+
+  // Fill constant, input, output rows (special case)
+  if (json.constant) fillSpecialRows(`${device}-constant`, json.constant);
+  if (json.input) fillSpecialRows(`${device}-input`, json.input);
+  if (json.output) fillSpecialRows(`${device}-output`, json.output);
+
   for (const op in json) {
-    // skip non-op keys (e.g. maxTensorByteLength, preferredInputLayout)
-    if (typeof json[op] !== 'object' || Array.isArray(json[op])) continue;
+    // skip non-op keys (e.g. maxTensorByteLength, preferredInputLayout, constant, input, output)
+    if (typeof json[op] !== 'object' || Array.isArray(json[op]) || ['constant', 'input', 'output'].includes(op)) continue;
     const opVal = json[op];
     // If opVal has dataTypes directly, it's a leaf
     if (Array.isArray(opVal.dataTypes)) {
@@ -365,25 +417,12 @@ const updateOpSupportLimits = (device, json) => {
   }
 }
 
-const countUniqueKeys = (obj) => {
-  let uniqueKeys = new Set();
-
-  for (let key in obj) {
-    uniqueKeys.add(key);
-  }
-
-  return uniqueKeys.size;
-};
-
-
 async function runOpSupportLimitsTests() {
   const $ = s => document.querySelector(s);
   const cpuDiv = $('#cpu');
   const gpuDiv = $('#gpu');
   const npuDiv = $('#npu');
-  let numberofCpuOps = 0;
-  let numberofGpuOps = 0;
-  let numberofNpuOps = 0;
+  const nextNpuDiv = $('#next-npu');
 
   try {
     const cpuContext = await navigator.ml?.createContext({ deviceType: 'cpu' });
@@ -391,10 +430,9 @@ async function runOpSupportLimitsTests() {
     console.log('-- cpu --');
     console.log(cpuJson);
     updateOpSupportLimits('cpu', cpuJson);
-    numberofCpuOps = countUniqueKeys(cpuJson);
   } catch (e) {
     cpuDiv.innerHTML = 'Failed to create CPU device context';
-    cpuDiv.setAttribute('class', 'fail');
+    cpuDiv.setAttribute('class', 'cpu fail');
   }
 
   try {
@@ -403,10 +441,9 @@ async function runOpSupportLimitsTests() {
     console.log('-- gpu --');
     console.log(gpuJson);
     updateOpSupportLimits('gpu', gpuJson);
-    numberofGpuOps = countUniqueKeys(gpuJson);
   } catch (e) {
     gpuDiv.innerHTML = 'Failed to create GPU device context';
-    gpuDiv.setAttribute('class', 'fail');
+    gpuDiv.setAttribute('class', 'gpu fail');
   }
 
   try {
@@ -415,15 +452,35 @@ async function runOpSupportLimitsTests() {
     console.log('-- npu --');
     console.log(npuJson);
     updateOpSupportLimits('npu', npuJson);
-    numberofNpuOps = countUniqueKeys(npuJson);
   } catch (e) {
     npuDiv.innerHTML = 'Failed to create NPU device context. NPU device is not supported';
-    npuDiv.setAttribute('class', 'fail');
+    npuDiv.setAttribute('class', 'npufail');
+    nextNpuDiv.innerHTML = 'NPU device is not supported';
+    nextNpuDiv.setAttribute('class', 'npufail');
   }
 
 }
 
+function getBrowserInfo() {
+  const browser = $("#browser");
+  const chromium = $("#chromium");
+  if (navigator.userAgentData) {
+    navigator.userAgentData.getHighEntropyValues(["fullVersionList"]).then(ua => {
+      for (let i of ua.fullVersionList) {
+        if (i.brand.toLowerCase().indexOf("brand") === -1) {
+          if (i.brand.toLowerCase().indexOf("chromium") > -1) {
+            chromium.innerHTML = `${i.brand} ${i.version}`;
+          } else {
+            browser.innerHTML = `${i.brand} ${i.version}`;
+          }
+        }
+      }
+    });
+  }
+}
+
 async function runTests() {
+  getBrowserInfo();
   await runIdlTests();
   await runOpSupportLimitsTests();
 }

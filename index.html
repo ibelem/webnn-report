@@ -69,14 +69,20 @@
       <div>WebNN Report</div>
     </div>
     <div class="legend">
-      <div><span class="pass"></span> Supported</div>
-      <div><span class="fail"></span> Not Supported</div>
+      <div>
+        <div id="browser"></div>
+        <div id="chromium"></div>
+      </div>
+      <div>
+        <div><span class="pass"></span> Supported</div>
+        <div><span class="fail"></span> Not Supported</div>
+      </div>
     </div>
   </header>
   <div class="grid-layout">
     <div id="idl" class="g2"></div>
     <div id="op-support-limits">
-      <div id="cpu" class="card">
+      <div id="cpu" class="card cpu">
         <div class="row line">
           <div class="header" title="cpu">cpu</div>
           <div class="header" title="limits">limits</div>
@@ -99,6 +105,78 @@
           <div class="rank-range">
             <div class="header" title="rankRange min">min</div>
             <div class="header" title="rankRange max">max</div>
+          </div>
+        </div>
+        <div class="row">
+          <div title="constant">constant</div>
+          <div title=""></div>
+          <div class="float">
+            <div id="cpu-constant-dataType-float16"></div>
+            <div id="cpu-constant-dataType-float32"></div>
+          </div>
+          <div class="int">
+            <div id="cpu-constant-dataType-int32"></div>
+            <div id="cpu-constant-dataType-int4"></div>
+            <div id="cpu-constant-dataType-int64"></div>
+            <div id="cpu-constant-dataType-int8"></div>
+          </div>
+          <div class="uint">
+            <div id="cpu-constant-dataType-uint32"></div>
+            <div id="cpu-constant-dataType-uint4"></div>
+            <div id="cpu-constant-dataType-uint64"></div>
+            <div id="cpu-constant-dataType-uint8"></div>
+          </div>
+          <div class="rank-range">
+            <div id="cpu-constant-rankRange-min"></div>
+            <div id="cpu-constant-rankRange-max"></div>
+          </div>
+        </div>
+        <div class="row">
+          <div title="input">input</div>
+          <div title=""></div>
+          <div class="float">
+            <div id="cpu-input-dataType-float16"></div>
+            <div id="cpu-input-dataType-float32"></div>
+          </div>
+          <div class="int">
+            <div id="cpu-input-dataType-int32"></div>
+            <div id="cpu-input-dataType-int4"></div>
+            <div id="cpu-input-dataType-int64"></div>
+            <div id="cpu-input-dataType-int8"></div>
+          </div>
+          <div class="uint">
+            <div id="cpu-input-dataType-uint32"></div>
+            <div id="cpu-input-dataType-uint4"></div>
+            <div id="cpu-input-dataType-uint64"></div>
+            <div id="cpu-input-dataType-uint8"></div>
+          </div>
+          <div class="rank-range">
+            <div id="cpu-input-rankRange-min"></div>
+            <div id="cpu-input-rankRange-max"></div>
+          </div>
+        </div>
+        <div class="row line">
+          <div title="output">output</div>
+          <div title=""></div>
+          <div class="float">
+            <div id="cpu-output-dataType-float16"></div>
+            <div id="cpu-output-dataType-float32"></div>
+          </div>
+          <div class="int">
+            <div id="cpu-output-dataType-int32"></div>
+            <div id="cpu-output-dataType-int4"></div>
+            <div id="cpu-output-dataType-int64"></div>
+            <div id="cpu-output-dataType-int8"></div>
+          </div>
+          <div class="uint">
+            <div id="cpu-output-dataType-uint32"></div>
+            <div id="cpu-output-dataType-uint4"></div>
+            <div id="cpu-output-dataType-uint64"></div>
+            <div id="cpu-output-dataType-uint8"></div>
+          </div>
+          <div class="rank-range">
+            <div id="cpu-output-rankRange-min"></div>
+            <div id="cpu-output-rankRange-max"></div>
           </div>
         </div>
         <div class="row">
@@ -6414,8 +6492,8 @@
           </div>
         </div>
       </div>
-      <div id="gpu">
-        <div class="row">
+      <div id="gpu" class="card gpu">
+        <div class="row line">
           <div class="header" title="gpu">gpu</div>
           <div class="header" title="limits">limits</div>
           <div class="float">
@@ -6437,6 +6515,78 @@
           <div class="rank-range">
             <div class="header" title="rankRange min">min</div>
             <div class="header" title="rankRange max">max</div>
+          </div>
+        </div>
+        <div class="row">
+          <div title="constant">constant</div>
+          <div title=""></div>
+          <div class="float">
+            <div id="gpu-constant-dataType-float16"></div>
+            <div id="gpu-constant-dataType-float32"></div>
+          </div>
+          <div class="int">
+            <div id="gpu-constant-dataType-int32"></div>
+            <div id="gpu-constant-dataType-int4"></div>
+            <div id="gpu-constant-dataType-int64"></div>
+            <div id="gpu-constant-dataType-int8"></div>
+          </div>
+          <div class="uint">
+            <div id="gpu-constant-dataType-uint32"></div>
+            <div id="gpu-constant-dataType-uint4"></div>
+            <div id="gpu-constant-dataType-uint64"></div>
+            <div id="gpu-constant-dataType-uint8"></div>
+          </div>
+          <div class="rank-range">
+            <div id="gpu-constant-rankRange-min"></div>
+            <div id="gpu-constant-rankRange-max"></div>
+          </div>
+        </div>
+        <div class="row">
+          <div title="input">input</div>
+          <div title=""></div>
+          <div class="float">
+            <div id="gpu-input-dataType-float16"></div>
+            <div id="gpu-input-dataType-float32"></div>
+          </div>
+          <div class="int">
+            <div id="gpu-input-dataType-int32"></div>
+            <div id="gpu-input-dataType-int4"></div>
+            <div id="gpu-input-dataType-int64"></div>
+            <div id="gpu-input-dataType-int8"></div>
+          </div>
+          <div class="uint">
+            <div id="gpu-input-dataType-uint32"></div>
+            <div id="gpu-input-dataType-uint4"></div>
+            <div id="gpu-input-dataType-uint64"></div>
+            <div id="gpu-input-dataType-uint8"></div>
+          </div>
+          <div class="rank-range">
+            <div id="gpu-input-rankRange-min"></div>
+            <div id="gpu-input-rankRange-max"></div>
+          </div>
+        </div>
+        <div class="row line">
+          <div title="output">output</div>
+          <div title=""></div>
+          <div class="float">
+            <div id="gpu-output-dataType-float16"></div>
+            <div id="gpu-output-dataType-float32"></div>
+          </div>
+          <div class="int">
+            <div id="gpu-output-dataType-int32"></div>
+            <div id="gpu-output-dataType-int4"></div>
+            <div id="gpu-output-dataType-int64"></div>
+            <div id="gpu-output-dataType-int8"></div>
+          </div>
+          <div class="uint">
+            <div id="gpu-output-dataType-uint32"></div>
+            <div id="gpu-output-dataType-uint4"></div>
+            <div id="gpu-output-dataType-uint64"></div>
+            <div id="gpu-output-dataType-uint8"></div>
+          </div>
+          <div class="rank-range">
+            <div id="gpu-output-rankRange-min"></div>
+            <div id="gpu-output-rankRange-max"></div>
           </div>
         </div>
         <div class="row">
@@ -12752,7 +12902,7 @@
           </div>
         </div>
       </div>
-      <div id="npu">
+      <div id="npu" class="card npu">
         <div class="row">
           <div class="header" title="npu">npu</div>
           <div class="header" title="limits">limits</div>
@@ -12775,6 +12925,78 @@
           <div class="rank-range">
             <div class="header" title="rankRange min">min</div>
             <div class="header" title="rankRange max">max</div>
+          </div>
+        </div>
+        <div class="row">
+          <div title="constant">constant</div>
+          <div title=""></div>
+          <div class="float">
+            <div id="npu-constant-dataType-float16"></div>
+            <div id="npu-constant-dataType-float32"></div>
+          </div>
+          <div class="int">
+            <div id="npu-constant-dataType-int32"></div>
+            <div id="npu-constant-dataType-int4"></div>
+            <div id="npu-constant-dataType-int64"></div>
+            <div id="npu-constant-dataType-int8"></div>
+          </div>
+          <div class="uint">
+            <div id="npu-constant-dataType-uint32"></div>
+            <div id="npu-constant-dataType-uint4"></div>
+            <div id="npu-constant-dataType-uint64"></div>
+            <div id="npu-constant-dataType-uint8"></div>
+          </div>
+          <div class="rank-range">
+            <div id="npu-constant-rankRange-min"></div>
+            <div id="npu-constant-rankRange-max"></div>
+          </div>
+        </div>
+        <div class="row">
+          <div title="input">input</div>
+          <div title=""></div>
+          <div class="float">
+            <div id="npu-input-dataType-float16"></div>
+            <div id="npu-input-dataType-float32"></div>
+          </div>
+          <div class="int">
+            <div id="npu-input-dataType-int32"></div>
+            <div id="npu-input-dataType-int4"></div>
+            <div id="npu-input-dataType-int64"></div>
+            <div id="npu-input-dataType-int8"></div>
+          </div>
+          <div class="uint">
+            <div id="npu-input-dataType-uint32"></div>
+            <div id="npu-input-dataType-uint4"></div>
+            <div id="npu-input-dataType-uint64"></div>
+            <div id="npu-input-dataType-uint8"></div>
+          </div>
+          <div class="rank-range">
+            <div id="npu-input-rankRange-min"></div>
+            <div id="npu-input-rankRange-max"></div>
+          </div>
+        </div>
+        <div class="row line">
+          <div title="output">output</div>
+          <div title=""></div>
+          <div class="float">
+            <div id="npu-output-dataType-float16"></div>
+            <div id="npu-output-dataType-float32"></div>
+          </div>
+          <div class="int">
+            <div id="npu-output-dataType-int32"></div>
+            <div id="npu-output-dataType-int4"></div>
+            <div id="npu-output-dataType-int64"></div>
+            <div id="npu-output-dataType-int8"></div>
+          </div>
+          <div class="uint">
+            <div id="npu-output-dataType-uint32"></div>
+            <div id="npu-output-dataType-uint4"></div>
+            <div id="npu-output-dataType-uint64"></div>
+            <div id="npu-output-dataType-uint8"></div>
+          </div>
+          <div class="rank-range">
+            <div id="npu-output-rankRange-min"></div>
+            <div id="npu-output-rankRange-max"></div>
           </div>
         </div>
         <div class="row">
@@ -19091,15 +19313,47 @@
         </div>
       </div>
     </div>
-    <div id="next">Test</div>
+    <div id="next" class="next">
+      <div id="next-cpu">
+        <div class="title">CPU</div>
+        <div class="list">
+            <div class="item">preferredInputLayout</div>
+            <div class="value" id="cpu-preferredInputLayout"></div>
+            <div class="item">maxTensorByteLength</div>
+            <div class="value" id="cpu-maxTensorByteLength"></div>
+        </div>
+      </div>
+      <div id="next-gpu">
+        <div class="title">GPU</div>
+        <div class="list">
+          <div class="item">preferredInputLayout</div>
+          <div class="value" id="gpu-preferredInputLayout"></div>
+          <div class="item">maxTensorByteLength</div>
+          <div class="value" id="gpu-maxTensorByteLength"></div>
+        </div>
+      </div>
+      <div id="next-npu">
+        <div class="title">NPU</div>
+        <div class="list">
+          <div class="item">preferredInputLayout</div>
+          <div class="value" id="npu-preferredInputLayout"></div>
+          <div class="item">maxTensorByteLength</div>
+          <div class="value" id="npu-maxTensorByteLength"></div>
+        </div>
+      </div>
+    </div>
   </div>
   <footer>
     <div id="links">
-      <a href="https://webnn.io">WebNN Docs</a> · 
-      <a href="https://webmachinelearning.github.io/webnn/">WebNN API</a>
+      Web Neural Network · 
+      <a href="https://webnn.io">Docs</a> ·
+      <a href="https://webmachinelearning.github.io/webnn/">API</a> · 
+      <a href="https://webmachinelearning.github.io/webnn/">Implementation Status</a> · 
+      <a href="https://wpt.fyi/results/webnn/conformance_tests?label=experimental&label=master&aligned">Conformance Test</a>
     </div>
     <div class="copy">&copy;2025 WebNN API</div>
   </footer>
   <script src="index.js"></script>
 </body>
+
 </html>
