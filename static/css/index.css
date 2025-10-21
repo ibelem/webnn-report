@@ -84,7 +84,6 @@ header {
 }
 
 .idl {
-  padding: 10px;
   font-size: 0.8rem;
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
@@ -133,11 +132,13 @@ header {
 }
 
 .g3 {
-  padding: 10px;
+  padding: 0 10px;
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
   gap: 10px;
   align-items: start;
+  font-size: 0.7rem;
+  margin-bottom: 10px;
 }
 
 .g3>div {
@@ -162,12 +163,8 @@ header {
 
 #next .list {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  grid-template-columns: 1fr 1fr;
   column-gap: 10px;
-}
-
-#op-support-limits .card {
-  font-size: 0.8rem;
 }
 
 #op-support-limits .card .row:first-child {
@@ -260,6 +257,12 @@ footer {
   text-decoration: underline;
 }
 
+#content {
+  display: grid;
+  grid-template-columns: 1fr;
+  padding: 10px;
+}
+
 @media (min-width: 360px) {
 
 }
@@ -298,5 +301,8 @@ footer {
 @media (min-width: 1280px) {
   .g3 {
     grid-template-columns: 1fr 1fr 1fr;
+  }
+  #content {
+    grid-template-columns: 1fr 9fr;
   }
 }
