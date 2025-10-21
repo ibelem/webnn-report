@@ -453,7 +453,7 @@ async function runOpSupportLimitsTests() {
     console.log(npuJson);
     updateOpSupportLimits('npu', npuJson);
   } catch (e) {
-    npuDiv.innerHTML = 'Failed to create NPU device context. NPU device is not supported';
+    npuDiv.innerHTML = 'NPU device is not supported';
     npuDiv.setAttribute('class', 'npufail');
     nextNpuDiv.innerHTML = 'NPU device is not supported';
     nextNpuDiv.setAttribute('class', 'npufail');
@@ -468,10 +468,11 @@ function getBrowserInfo() {
     navigator.userAgentData.getHighEntropyValues(["fullVersionList"]).then(ua => {
       for (let i of ua.fullVersionList) {
         if (i.brand.toLowerCase().indexOf("brand") === -1) {
+          let brand = i.brand.replace('Google ', '').replace('Microsoft ', '').replace('Mozilla ', '').replace('Apple ', '')
           if (i.brand.toLowerCase().indexOf("chromium") > -1) {
-            chromium.innerHTML = `${i.brand} ${i.version}`;
+            chromium.innerHTML = `${brand} ${i.version}`;
           } else {
-            browser.innerHTML = `${i.brand} ${i.version}`;
+            browser.innerHTML = `${brand} ${i.version}`;
           }
         }
       }

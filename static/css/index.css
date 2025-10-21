@@ -59,6 +59,7 @@ header .title {
   grid-template-columns: auto auto;
   align-items: center;
   gap: 0px;
+  font-family: Poppins, Tahoma, Geneva, Verdana, sans-serif;
 }
 
 header .legend {
@@ -87,6 +88,8 @@ header svg {
 footer {
   padding: 10px 0;
   text-align: center;
+  font-size: 12px;
+  font-family: Poppins, Tahoma, Geneva, Verdana, sans-serif;
 }
 
 .grid-layout {
@@ -317,7 +320,11 @@ span.fail {
 
 #links a {
   color: var(--blue);
-  text-decoration: dashed;
+  text-decoration: dotted;
+}
+
+#links a:hover {
+  text-decoration: underline
 }
 
 @media (min-width: 360px) {
@@ -328,7 +335,7 @@ span.fail {
 
   header .title {
     justify-content: center;
-    column-gap: 10px;
+    column-gap: 5px;
   }
 
   header .legend {
@@ -337,6 +344,7 @@ span.fail {
     grid-template-columns: 1fr;
     grid-template-rows: 1fr 1fr;
     justify-items: center;
+    row-gap: 0;
   }
 
   header .legend>div {
@@ -357,7 +365,9 @@ span.fail {
 }
 
 @media (min-width: 640px) {
-
+  .g2>div {
+    align-self: flex-start;
+  }
   #idl,
   .next {
     grid-template-columns: 1fr 1fr;
@@ -372,7 +382,6 @@ span.fail {
   }
 
   header .title {
-    column-gap: 10px;
     justify-content: start;
   }
 
@@ -399,10 +408,6 @@ span.fail {
   #op-support-limits {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
-  }
-
-  .g2>div {
-    align-self: flex-start;
   }
 }
 
