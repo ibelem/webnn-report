@@ -84,13 +84,73 @@
     </div>
     <div>
       <div id="ops">
-        <div class="title">WebNN Operations · FP16</div>
+        <div class="title">WebNN Operations · FP16 · GPU CPU NPU </div>
         <div class="ops-g3">
           <div class="list">
             <div class="op">argMax</div>
             <div title="gpu" class="result gpu" id="gpu-op-argMax"></div>
             <div title="cpu" class="result cpu" id="cpu-op-argMax"></div>
             <div title="npu" class="result npu" id="npu-op-argMax"></div>
+          </div>
+          <div class="list">
+            <div class="op">dequantizeLinear</div>
+            <div title="gpu" class="result gpu" id="gpu-op-dequantizeLinear"></div>
+            <div title="cpu" class="result cpu" id="cpu-op-dequantizeLinear"></div>
+            <div title="npu" class="result npu" id="npu-op-dequantizeLinear"></div>
+          </div>
+          <div class="list">
+            <div class="op">quantizeLinear</div>
+            <div title="gpu" class="result gpu" id="gpu-op-quantizeLinear"></div>
+            <div title="cpu" class="result cpu" id="cpu-op-quantizeLinear"></div>
+            <div title="npu" class="result npu" id="npu-op-quantizeLinear"></div>
+          </div>
+          <div class="list">
+            <div class="op">elu</div>
+            <div title="gpu" class="result gpu" id="gpu-op-elu"></div>
+            <div title="cpu" class="result cpu" id="cpu-op-elu"></div>
+            <div title="npu" class="result npu" id="npu-op-elu"></div>
+          </div>
+          <div class="list">
+            <div class="op">expand</div>
+            <div title="gpu" class="result gpu" id="gpu-op-expand"></div>
+            <div title="cpu" class="result cpu" id="cpu-op-expand"></div>
+            <div title="npu" class="result npu" id="npu-op-expand"></div>
+          </div>
+          <div class="list">
+            <div class="op">gather</div>
+            <div title="gpu" class="result gpu" id="gpu-op-gather"></div>
+            <div title="cpu" class="result cpu" id="cpu-op-gather"></div>
+            <div title="npu" class="result npu" id="npu-op-gather"></div>
+          </div>
+          <div class="list">
+            <div class="op">gatherElements</div>
+            <div title="gpu" class="result gpu" id="gpu-op-gatherElements"></div>
+            <div title="cpu" class="result cpu" id="cpu-op-gatherElements"></div>
+            <div title="npu" class="result npu" id="npu-op-gatherElements"></div>
+          </div>
+          <div class="list">
+            <div class="op">gatherND</div>
+            <div title="gpu" class="result gpu" id="gpu-op-gatherND"></div>
+            <div title="cpu" class="result cpu" id="cpu-op-gatherND"></div>
+            <div title="npu" class="result npu" id="npu-op-gatherND"></div>
+          </div>
+          <div class="list">
+            <div class="op">gelu</div>
+            <div title="gpu" class="result gpu" id="gpu-op-gelu"></div>
+            <div title="cpu" class="result cpu" id="cpu-op-gelu"></div>
+            <div title="npu" class="result npu" id="npu-op-gelu"></div>
+          </div>
+          <div class="list">
+            <div class="op">gru</div>
+            <div title="gpu" class="result gpu" id="gpu-op-gru"></div>
+            <div title="cpu" class="result cpu" id="cpu-op-gru"></div>
+            <div title="npu" class="result npu" id="npu-op-gru"></div>
+          </div>
+          <div class="list">
+            <div class="op">gruCell</div>
+            <div title="gpu" class="result gpu" id="gpu-op-gruCell"></div>
+            <div title="cpu" class="result cpu" id="cpu-op-gruCell"></div>
+            <div title="npu" class="result npu" id="npu-op-gruCell"></div>
           </div>
           <div class="list">
             <div class="op">argMin</div>
@@ -157,6 +217,210 @@
             <div title="gpu" class="result gpu" id="gpu-op-softmax"></div>
             <div title="cpu" class="result cpu" id="cpu-op-softmax"></div>
             <div title="npu" class="result npu" id="npu-op-softmax"></div>
+          </div>
+          <div class="list">
+            <div class="op">add</div>
+            <div title="gpu" class="result gpu" id="gpu-op-add"></div>
+            <div title="cpu" class="result cpu" id="cpu-op-add"></div>
+            <div title="npu" class="result npu" id="npu-op-add"></div>
+          </div>
+          <div class="list">
+            <div class="op">div</div>
+            <div title="gpu" class="result gpu" id="gpu-op-div"></div>
+            <div title="cpu" class="result cpu" id="cpu-op-div"></div>
+            <div title="npu" class="result npu" id="npu-op-div"></div>
+          </div>
+          <div class="list">
+            <div class="op">max</div>
+            <div title="gpu" class="result gpu" id="gpu-op-max"></div>
+            <div title="cpu" class="result cpu" id="cpu-op-max"></div>
+            <div title="npu" class="result npu" id="npu-op-max"></div>
+          </div>
+          <div class="list">
+            <div class="op">min</div>
+            <div title="gpu" class="result gpu" id="gpu-op-min"></div>
+            <div title="cpu" class="result cpu" id="cpu-op-min"></div>
+            <div title="npu" class="result npu" id="npu-op-min"></div>
+          </div>
+          <div class="list">
+            <div class="op">mul</div>
+            <div title="gpu" class="result gpu" id="gpu-op-mul"></div>
+            <div title="cpu" class="result cpu" id="cpu-op-mul"></div>
+            <div title="npu" class="result npu" id="npu-op-mul"></div>
+          </div>
+          <div class="list">
+            <div class="op">pow</div>
+            <div title="gpu" class="result gpu" id="gpu-op-pow"></div>
+            <div title="cpu" class="result cpu" id="cpu-op-pow"></div>
+            <div title="npu" class="result npu" id="npu-op-pow"></div>
+          </div>
+          <div class="list">
+            <div class="op">sub</div>
+            <div title="gpu" class="result gpu" id="gpu-op-sub"></div>
+            <div title="cpu" class="result cpu" id="cpu-op-sub"></div>
+            <div title="npu" class="result npu" id="npu-op-sub"></div>
+          </div>
+          <div class="list">
+            <div class="op">equal</div>
+            <div title="gpu" class="result gpu" id="gpu-op-equal"></div>
+            <div title="cpu" class="result cpu" id="cpu-op-equal"></div>
+            <div title="npu" class="result npu" id="npu-op-equal"></div>
+          </div>
+          <div class="list">
+            <div class="op">notEqual</div>
+            <div title="gpu" class="result gpu" id="gpu-op-notEqual"></div>
+            <div title="cpu" class="result cpu" id="cpu-op-notEqual"></div>
+            <div title="npu" class="result npu" id="npu-op-notEqual"></div>
+          </div>
+          <div class="list">
+            <div class="op">greater</div>
+            <div title="gpu" class="result gpu" id="gpu-op-greater"></div>
+            <div title="cpu" class="result cpu" id="cpu-op-greater"></div>
+            <div title="npu" class="result npu" id="npu-op-greater"></div>
+          </div>
+          <div class="list">
+            <div class="op">greaterOrEqual</div>
+            <div title="gpu" class="result gpu" id="gpu-op-greaterOrEqual"></div>
+            <div title="cpu" class="result cpu" id="cpu-op-greaterOrEqual"></div>
+            <div title="npu" class="result npu" id="npu-op-greaterOrEqual"></div>
+          </div>
+          <div class="list">
+            <div class="op">lesser</div>
+            <div title="gpu" class="result gpu" id="gpu-op-lesser"></div>
+            <div title="cpu" class="result cpu" id="cpu-op-lesser"></div>
+            <div title="npu" class="result npu" id="npu-op-lesser"></div>
+          </div>
+          <div class="list">
+            <div class="op">lesserOrEqual</div>
+            <div title="gpu" class="result gpu" id="gpu-op-lesserOrEqual"></div>
+            <div title="cpu" class="result cpu" id="cpu-op-lesserOrEqual"></div>
+            <div title="npu" class="result npu" id="npu-op-lesserOrEqual"></div>
+          </div>
+          <div class="list">
+            <div class="op">logicalAnd</div>
+            <div title="gpu" class="result gpu" id="gpu-op-logicalAnd"></div>
+            <div title="cpu" class="result cpu" id="cpu-op-logicalAnd"></div>
+            <div title="npu" class="result npu" id="npu-op-logicalAnd"></div>
+          </div>
+          <div class="list">
+            <div class="op">logicalNot</div>
+            <div title="gpu" class="result gpu" id="gpu-op-logicalNot"></div>
+            <div title="cpu" class="result cpu" id="cpu-op-logicalNot"></div>
+            <div title="npu" class="result npu" id="npu-op-logicalNot"></div>
+          </div>
+          <div class="list">
+            <div class="op">logicalOr</div>
+            <div title="gpu" class="result gpu" id="gpu-op-logicalOr"></div>
+            <div title="cpu" class="result cpu" id="cpu-op-logicalOr"></div>
+            <div title="npu" class="result npu" id="npu-op-logicalOr"></div>
+          </div>
+          <div class="list">
+            <div class="op">logicalXor</div>
+            <div title="gpu" class="result gpu" id="gpu-op-logicalXor"></div>
+            <div title="cpu" class="result cpu" id="cpu-op-logicalXor"></div>
+            <div title="npu" class="result npu" id="npu-op-logicalXor"></div>
+          </div>
+          <div class="list">
+            <div class="op">isInfinite</div>
+            <div title="gpu" class="result gpu" id="gpu-op-isInfinite"></div>
+            <div title="cpu" class="result cpu" id="cpu-op-isInfinite"></div>
+            <div title="npu" class="result npu" id="npu-op-isInfinite"></div>
+          </div>
+          <div class="list">
+            <div class="op">isNaN</div>
+            <div title="gpu" class="result gpu" id="gpu-op-isNaN"></div>
+            <div title="cpu" class="result cpu" id="cpu-op-isNaN"></div>
+            <div title="npu" class="result npu" id="npu-op-isNaN"></div>
+          </div>
+          <div class="list">
+            <div class="op">abs</div>
+            <div title="gpu" class="result gpu" id="gpu-op-abs"></div>
+            <div title="cpu" class="result cpu" id="cpu-op-abs"></div>
+            <div title="npu" class="result npu" id="npu-op-abs"></div>
+          </div>
+          <div class="list">
+            <div class="op">ceil</div>
+            <div title="gpu" class="result gpu" id="gpu-op-ceil"></div>
+            <div title="cpu" class="result cpu" id="cpu-op-ceil"></div>
+            <div title="npu" class="result npu" id="npu-op-ceil"></div>
+          </div>
+          <div class="list">
+            <div class="op">cos</div>
+            <div title="gpu" class="result gpu" id="gpu-op-cos"></div>
+            <div title="cpu" class="result cpu" id="cpu-op-cos"></div>
+            <div title="npu" class="result npu" id="npu-op-cos"></div>
+          </div>
+          <div class="list">
+            <div class="op">erf</div>
+            <div title="gpu" class="result gpu" id="gpu-op-erf"></div>
+            <div title="cpu" class="result cpu" id="cpu-op-erf"></div>
+            <div title="npu" class="result npu" id="npu-op-erf"></div>
+          </div>
+          <div class="list">
+            <div class="op">exp</div>
+            <div title="gpu" class="result gpu" id="gpu-op-exp"></div>
+            <div title="cpu" class="result cpu" id="cpu-op-exp"></div>
+            <div title="npu" class="result npu" id="npu-op-exp"></div>
+          </div>
+          <div class="list">
+            <div class="op">floor</div>
+            <div title="gpu" class="result gpu" id="gpu-op-floor"></div>
+            <div title="cpu" class="result cpu" id="cpu-op-floor"></div>
+            <div title="npu" class="result npu" id="npu-op-floor"></div>
+          </div>
+          <div class="list">
+            <div class="op">identity</div>
+            <div title="gpu" class="result gpu" id="gpu-op-identity"></div>
+            <div title="cpu" class="result cpu" id="cpu-op-identity"></div>
+            <div title="npu" class="result npu" id="npu-op-identity"></div>
+          </div>
+          <div class="list">
+            <div class="op">log</div>
+            <div title="gpu" class="result gpu" id="gpu-op-log"></div>
+            <div title="cpu" class="result cpu" id="cpu-op-log"></div>
+            <div title="npu" class="result npu" id="npu-op-log"></div>
+          </div>
+          <div class="list">
+            <div class="op">neg</div>
+            <div title="gpu" class="result gpu" id="gpu-op-neg"></div>
+            <div title="cpu" class="result cpu" id="cpu-op-neg"></div>
+            <div title="npu" class="result npu" id="npu-op-neg"></div>
+          </div>
+          <div class="list">
+            <div class="op">reciprocal</div>
+            <div title="gpu" class="result gpu" id="gpu-op-reciprocal"></div>
+            <div title="cpu" class="result cpu" id="cpu-op-reciprocal"></div>
+            <div title="npu" class="result npu" id="npu-op-reciprocal"></div>
+          </div>
+          <div class="list">
+            <div class="op">roundEven</div>
+            <div title="gpu" class="result gpu" id="gpu-op-roundEven"></div>
+            <div title="cpu" class="result cpu" id="cpu-op-roundEven"></div>
+            <div title="npu" class="result npu" id="npu-op-roundEven"></div>
+          </div>
+          <div class="list">
+            <div class="op">sign</div>
+            <div title="gpu" class="result gpu" id="gpu-op-sign"></div>
+            <div title="cpu" class="result cpu" id="cpu-op-sign"></div>
+            <div title="npu" class="result npu" id="npu-op-sign"></div>
+          </div>
+          <div class="list">
+            <div class="op">sin</div>
+            <div title="gpu" class="result gpu" id="gpu-op-sin"></div>
+            <div title="cpu" class="result cpu" id="cpu-op-sin"></div>
+            <div title="npu" class="result npu" id="npu-op-sin"></div>
+          </div>
+          <div class="list">
+            <div class="op">sqrt</div>
+            <div title="gpu" class="result gpu" id="gpu-op-sqrt"></div>
+            <div title="cpu" class="result cpu" id="cpu-op-sqrt"></div>
+            <div title="npu" class="result npu" id="npu-op-sqrt"></div>
+          </div>
+          <div class="list">
+            <div class="op">tan</div>
+            <div title="gpu" class="result gpu" id="gpu-op-tan"></div>
+            <div title="cpu" class="result cpu" id="cpu-op-tan"></div>
+            <div title="npu" class="result npu" id="npu-op-tan"></div>
           </div>
         </div>
       </div>
@@ -19425,7 +19689,6 @@
   </div>
   <footer>
     <div id="links">
-      Web Neural Network ·
       <a href="https://webnn.io" title="WebNN Docs">Docs</a> ·
       <a href="https://webmachinelearning.github.io/webnn/" title="WebNN Spec">API</a> ·
       <a href="https://webmachinelearning.github.io/webnn/" title="WebNN Implementation Status">Implementation</a> ·
@@ -19433,7 +19696,7 @@
         title="WebNN Conformance Test">Conformance</a> ·
       <a href="https://caniuse.com/?search=webnn" title="Can I Use WebNN">Can I Use WebNN</a>
     </div>
-    <div class="copy">&copy;2025 WebNN API</div>
+    <div class="copy">&copy;2025 Web Neural Network · WebNN API</div>
   </footer>
   <script src="index.js"></script>
   <script src="static/js/utils.js"></script>
@@ -19452,6 +19715,50 @@
   <script src="static/js/ops/gemm.js"></script>
   <script src="static/js/ops/matmul.js"></script>
   <script src="static/js/ops/softmax.js"></script>
+  <script src="static/js/ops/add.js"></script>
+  <script src="static/js/ops/div.js"></script>
+  <script src="static/js/ops/max.js"></script>
+  <script src="static/js/ops/min.js"></script>
+  <script src="static/js/ops/mul.js"></script>
+  <script src="static/js/ops/pow.js"></script>
+  <script src="static/js/ops/sub.js"></script>
+  <script src="static/js/ops/equal.js"></script>
+  <script src="static/js/ops/notEqual.js"></script>
+  <script src="static/js/ops/greater.js"></script>
+  <script src="static/js/ops/greaterOrEqual.js"></script>
+  <script src="static/js/ops/lesser.js"></script>
+  <script src="static/js/ops/lesserOrEqual.js"></script>
+  <script src="static/js/ops/logicalAnd.js"></script>
+  <script src="static/js/ops/logicalNot.js"></script>
+  <script src="static/js/ops/logicalOr.js"></script>
+  <script src="static/js/ops/logicalXor.js"></script>
+  <script src="static/js/ops/isInfinite.js"></script>
+  <script src="static/js/ops/isNaN.js"></script>
+  <script src="static/js/ops/abs.js"></script>
+  <script src="static/js/ops/ceil.js"></script>
+  <script src="static/js/ops/cos.js"></script>
+  <script src="static/js/ops/erf.js"></script>
+  <script src="static/js/ops/exp.js"></script>
+  <script src="static/js/ops/floor.js"></script>
+  <script src="static/js/ops/identity.js"></script>
+  <script src="static/js/ops/log.js"></script>
+  <script src="static/js/ops/neg.js"></script>
+  <script src="static/js/ops/reciprocal.js"></script>
+  <script src="static/js/ops/roundEven.js"></script>
+  <script src="static/js/ops/sign.js"></script>
+  <script src="static/js/ops/sin.js"></script>
+  <script src="static/js/ops/sqrt.js"></script>
+  <script src="static/js/ops/tan.js"></script>
+  <script src="static/js/ops/dequantizeLinear.js"></script>
+  <script src="static/js/ops/quantizeLinear.js"></script>
+  <script src="static/js/ops/elu.js"></script>
+  <script src="static/js/ops/expand.js"></script>
+  <script src="static/js/ops/gather.js"></script>
+  <script src="static/js/ops/gatherElements.js"></script>
+  <script src="static/js/ops/gatherND.js"></script>
+  <script src="static/js/ops/gelu.js"></script>
+  <script src="static/js/ops/gru.js"></script>
+  <script src="static/js/ops/gruCell.js"></script>
 </body>
 
 </html>

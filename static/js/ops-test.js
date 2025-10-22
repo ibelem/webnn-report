@@ -32,13 +32,25 @@ function setOperationStatus(device, op, status, message = '') {
 	} else {
 		el.setAttribute('title', message);
 	}
-  const elSvg = document.querySelector(`#${device}-op-${op} svg`);
+	const elSvg = el.querySelector('svg');
+	if (!elSvg) {
+		if (status === 'pass') {
+			el.textContent = 'pass';
+		} else if (status === 'fail') {
+			el.textContent = 'fail';
+		} else {
+			el.textContent = 'n/a';
+			el.classList.add('na');
+		}
+		return;
+	}
 	if (status === 'pass') {
 		elSvg.setAttribute('class', 'pass');
 	} else if (status === 'fail') {
 		elSvg.setAttribute('class', 'fail');
 	} else {
 		elSvg.setAttribute('class', 'na');
+		el.classList.add('na');
 	}
 }
 
@@ -82,19 +94,19 @@ async function runOperationTests(contextMap = {}) {
 		const context = contextMap[device];
 		for (const op of operationNames) {
 			if (!context) {
-				setOperationStatus(device, op, 'na', 'Context not available.');
+				setOperationStatus(device, op, 'fail', `WebNN ${device.toUpperCase()}: Not Supported - Context not available.`);
 				continue;
 			}
 			try {
 				const result = await runSingleOperationTest(context, op, operationTests[op]);
 				if (result.pass) {
-					setOperationStatus(device, op, 'pass');
+					setOperationStatus(device, op, 'pass', `WebNN ${device.toUpperCase()}: Passed`);
 				} else {
-					setOperationStatus(device, op, 'fail', result.message);
+					setOperationStatus(device, op, 'fail', `WebNN ${device.toUpperCase()}: Failed - ${result.message}`);
 				}
 			} catch (error) {
 				console.error(`Operation test failed for ${op} on ${device}:`, error);
-				setOperationStatus(device, op, 'fail', error.message ?? 'Operation test failed.');
+				setOperationStatus(device, op, 'fail', `WebNN ${device.toUpperCase()}: Failed - ${error.message ?? 'Operation test failed.'}`);
 			}
 		}
 	}

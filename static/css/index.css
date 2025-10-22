@@ -46,6 +46,7 @@ header {
   padding: 10px 10px 0 10px;
   display: flex;
   flex-direction: column;
+  row-gap: 10px;
   font-family: Archivo, 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
   font-size: 0.8rem;
 }
@@ -53,7 +54,7 @@ header {
 #title {
   display: flex;
   flex-direction: row;
-  justify-content: center;
+  justify-content: flex-start;
   align-items: center;
   margin: 0;
   padding: 0;
@@ -65,6 +66,7 @@ header {
 #title svg {
   width: 120px;
   max-height: 40px;
+  margin-left: 4px;
 }
 
 .legend {
@@ -141,17 +143,17 @@ header {
 }
 
 #ops .title {
-  font-size: 0.8rem;
+  font-size: 0.7rem;
   margin-bottom: 5px;
 }
 
 .ops-g3 {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
   gap: 10px;
   align-items: start;
   font-size: 0.7rem;
-  margin-bottom: 10px;
+  margin-bottom: 5px;
 }
 
 .ops-g3 .list {
@@ -177,16 +179,27 @@ header {
   vertical-align: middle;
 }
 
+.ops-g3 .list .result.npu svg {
+  width: 18px;
+  height: 18px;
+}
+
 .ops-g3 .list .result.gpu svg.pass g,
-.ops-g3 .list .result.cpu svg.pass g,
-.ops-g3 .list .result.npu svg.pass g {
+.ops-g3 .list .result.cpu svg.pass g {
   stroke: var(--success);
 }
 
+.ops-g3 .list .result.npu svg.pass path {
+  fill: var(--success);
+}
+
 .ops-g3 .list .result.gpu svg.fail g,
-.ops-g3 .list .result.cpu svg.fail g,
-.ops-g3 .list .result.npu svg.fail g {
+.ops-g3 .list .result.cpu svg.fail g {
   stroke: var(--fail);
+}
+
+.ops-g3 .list .result.npu svg.fail path {
+  fill: var(--fail);
 }
 
 .g3 {
@@ -232,7 +245,6 @@ header {
 #op-support-limits .card .row {
   display: grid;
   grid-template-columns: 1fr 1fr 2fr 4fr 4fr 2fr;
-  column-gap: 10px;
 }
 
 #op-support-limits .row div {
@@ -328,7 +340,7 @@ footer {
 .legend div div {
   background-color: #fff;
   border-radius: 15px;
-  padding: 3px 12px;
+  padding: 3px 8px;
   box-shadow: rgba(0, 0, 0, 0.1) 0px 1px 3px -1px, rgba(0, 0, 0, 0.06) 0px 1px 3px -1px;
 }
 
