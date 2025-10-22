@@ -46,3 +46,11 @@
   font-weight: 400;
   src: url('../fonts/poppins/poppins-v24-latin-regular.woff2') format('woff2'); 
 }
+
+@font-face {
+  font-display: swap; 
+  font-family: 'Archivo';
+  font-style: normal;
+  font-weight: 400;
+  src: url('../fonts/archivo/archivo-v19-latin-regular.woff2') format('woff2'); 
+}

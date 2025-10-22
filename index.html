@@ -83,6 +83,35 @@
       <div class="idl" id="idl"></div>
     </div>
     <div>
+      <div id="ops">
+        <div class="title">WebNN Operations · FP16</div>
+        <div class="ops-g3">
+          <div class="list">
+            <div class="op">conv2d</div>
+            <div title="gpu" class="result" id="gpu-op-conv2d"></div>
+            <div title="cpu" class="result" id="cpu-op-conv2d"></div>
+            <div title="npu" class="result" id="npu-op-conv2d"></div>
+          </div>
+          <div class="list">
+            <div class="op">gemm</div>
+            <div title="gpu" class="result" id="gpu-op-gemm"></div>
+            <div title="cpu" class="result" id="cpu-op-gemm"></div>
+            <div title="npu" class="result" id="npu-op-gemm"></div>
+          </div>
+          <div class="list">
+            <div class="op">matmul</div>
+            <div title="gpu" class="result" id="gpu-op-matmul"></div>
+            <div title="cpu" class="result" id="cpu-op-matmul"></div>
+            <div title="npu" class="result" id="npu-op-matmul"></div>
+          </div>
+          <div class="list">
+            <div class="op">softmax</div>
+            <div title="gpu" class="result" id="gpu-op-softmax"></div>
+            <div title="cpu" class="result" id="cpu-op-softmax"></div>
+            <div title="npu" class="result" id="npu-op-softmax"></div>
+          </div>
+        </div>
+      </div>
       <div id="next" class="g3">
         <div id="next-gpu">
           <div class="title">GPU</div>
@@ -19349,15 +19378,20 @@
   <footer>
     <div id="links">
       Web Neural Network ·
-      <a href="https://webnn.io">Docs</a> ·
-      <a href="https://webmachinelearning.github.io/webnn/">API</a> ·
-      <a href="https://webmachinelearning.github.io/webnn/">Implementation Status</a> ·
-      <a href="https://wpt.fyi/results/webnn/conformance_tests?label=experimental&label=master&aligned">Conformance
-        Test</a>
+      <a href="https://webnn.io" title="WebNN Docs">Docs</a> ·
+      <a href="https://webmachinelearning.github.io/webnn/" title="WebNN Spec">API</a> ·
+      <a href="https://webmachinelearning.github.io/webnn/" title="WebNN Implementation Status">Implementation</a> ·
+      <a href="https://wpt.fyi/results/webnn/conformance_tests?label=experimental&label=master&aligned"
+        title="WebNN Conformance Test">Conformance</a> ·
+      <a href="https://caniuse.com/?search=webnn" title="Can I Use WebNN">Can I Use WebNN</a>
     </div>
     <div class="copy">&copy;2025 WebNN API</div>
   </footer>
   <script src="index.js"></script>
+  <script src="static/js/utils.js"></script>
+  <script src="static/js/idl-test.js"></script>
+  <script src="static/js/op-support-limits-test.js"></script>
+  <script src="static/js/ops-test.js"></script>
 </body>
 
 </html>
