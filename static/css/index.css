@@ -140,6 +140,11 @@ header {
   margin-bottom: 10px;
 }
 
+#ops .title {
+  font-size: 0.8rem;
+  margin-bottom: 5px;
+}
+
 .ops-g3 {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
@@ -152,6 +157,36 @@ header {
 .ops-g3 .list {
   display: grid;
   grid-template-columns: 1fr 1fr 1fr 1fr;
+}
+
+.ops-g3 .list>div {
+  max-width: 120px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.ops-g3 .list .result {
+  justify-self: center;
+}
+
+.ops-g3 .list .result svg {
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+  vertical-align: middle;
+}
+
+.ops-g3 .list .result.gpu svg.pass g,
+.ops-g3 .list .result.cpu svg.pass g,
+.ops-g3 .list .result.npu svg.pass g {
+  stroke: var(--success);
+}
+
+.ops-g3 .list .result.gpu svg.fail g,
+.ops-g3 .list .result.cpu svg.fail g,
+.ops-g3 .list .result.npu svg.fail g {
+  stroke: var(--fail);
 }
 
 .g3 {
@@ -175,10 +210,6 @@ header {
   font-weight: 500;
   border-bottom: 1px solid rgba(0, 0, 0, 0.2);
   padding-bottom: 3px;
-}
-
-#ops .title {
-  margin-bottom: 5px;
 }
 
 .npufail {

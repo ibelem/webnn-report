@@ -175,12 +175,36 @@ async function readGraphOutput(context, graph, outputDescriptor, outputName = 'o
 		readable: true
 	};
 
+	const convertTypedArray = raw => {
+		const ctor = getTypedArrayConstructor(outputDescriptor.dataType);
+		if (raw instanceof ctor) {
+			return raw;
+		}
+		const result = new ctor(raw.length ?? 0);
+		if (outputDescriptor.dataType === 'float16') {
+			if (usesFloat16BitPacking) {
+				for (let i = 0; i < raw.length; i += 1) {
+					result[i] = toFloat16Bits(raw[i]);
+				}
+				return result;
+			}
+			for (let i = 0; i < raw.length; i += 1) {
+				result[i] = raw[i];
+			}
+			return result;
+		}
+		for (let i = 0; i < raw.length; i += 1) {
+			result[i] = raw[i];
+		}
+		return result;
+	};
+
 	if (typeof context.dispatch === 'function' && typeof context.createTensor === 'function') {
 		const outputTensor = await context.createTensor(tensorDescriptor);
 		await context.dispatch(graph, {}, { [outputName]: outputTensor });
 		const raw = await context.readTensor(outputTensor);
 		if (ArrayBuffer.isView(raw)) {
-			return new (getTypedArrayConstructor(outputDescriptor.dataType))(raw.buffer);
+			return convertTypedArray(raw);
 		}
 		if (raw instanceof ArrayBuffer) {
 			return new (getTypedArrayConstructor(outputDescriptor.dataType))(raw);
@@ -195,7 +219,7 @@ async function readGraphOutput(context, graph, outputDescriptor, outputName = 'o
 			throw new Error('Unable to read outputs from compute result.');
 		}
 		if (ArrayBuffer.isView(candidate)) {
-			return new (getTypedArrayConstructor(outputDescriptor.dataType))(candidate.buffer);
+			return convertTypedArray(candidate);
 		}
 		if (candidate instanceof ArrayBuffer) {
 			return new (getTypedArrayConstructor(outputDescriptor.dataType))(candidate);

@@ -87,28 +87,76 @@
         <div class="title">WebNN Operations · FP16</div>
         <div class="ops-g3">
           <div class="list">
+            <div class="op">argMax</div>
+            <div title="gpu" class="result gpu" id="gpu-op-argMax"></div>
+            <div title="cpu" class="result cpu" id="cpu-op-argMax"></div>
+            <div title="npu" class="result npu" id="npu-op-argMax"></div>
+          </div>
+          <div class="list">
+            <div class="op">argMin</div>
+            <div title="gpu" class="result gpu" id="gpu-op-argMin"></div>
+            <div title="cpu" class="result cpu" id="cpu-op-argMin"></div>
+            <div title="npu" class="result npu" id="npu-op-argMin"></div>
+          </div>
+          <div class="list">
+            <div class="op">batchNormalization</div>
+            <div title="gpu" class="result gpu" id="gpu-op-batchNormalization"></div>
+            <div title="cpu" class="result cpu" id="cpu-op-batchNormalization"></div>
+            <div title="npu" class="result npu" id="npu-op-batchNormalization"></div>
+          </div>
+          <div class="list">
+            <div class="op">cast</div>
+            <div title="gpu" class="result gpu" id="gpu-op-cast"></div>
+            <div title="cpu" class="result cpu" id="cpu-op-cast"></div>
+            <div title="npu" class="result npu" id="npu-op-cast"></div>
+          </div>
+          <div class="list">
+            <div class="op">clamp</div>
+            <div title="gpu" class="result gpu" id="gpu-op-clamp"></div>
+            <div title="cpu" class="result cpu" id="cpu-op-clamp"></div>
+            <div title="npu" class="result npu" id="npu-op-clamp"></div>
+          </div>
+          <div class="list">
+            <div class="op">concat</div>
+            <div title="gpu" class="result gpu" id="gpu-op-concat"></div>
+            <div title="cpu" class="result cpu" id="cpu-op-concat"></div>
+            <div title="npu" class="result npu" id="npu-op-concat"></div>
+          </div>
+          <div class="list">
             <div class="op">conv2d</div>
-            <div title="gpu" class="result" id="gpu-op-conv2d"></div>
-            <div title="cpu" class="result" id="cpu-op-conv2d"></div>
-            <div title="npu" class="result" id="npu-op-conv2d"></div>
+            <div title="gpu" class="result gpu" id="gpu-op-conv2d"></div>
+            <div title="cpu" class="result cpu" id="cpu-op-conv2d"></div>
+            <div title="npu" class="result npu" id="npu-op-conv2d"></div>
+          </div>
+          <div class="list">
+            <div class="op">convTranspose2d</div>
+            <div title="gpu" class="result gpu" id="gpu-op-convTranspose2d"></div>
+            <div title="cpu" class="result cpu" id="cpu-op-convTranspose2d"></div>
+            <div title="npu" class="result npu" id="npu-op-convTranspose2d"></div>
+          </div>
+          <div class="list">
+            <div class="op">cumulativeSum</div>
+            <div title="gpu" class="result gpu" id="gpu-op-cumulativeSum"></div>
+            <div title="cpu" class="result cpu" id="cpu-op-cumulativeSum"></div>
+            <div title="npu" class="result npu" id="npu-op-cumulativeSum"></div>
           </div>
           <div class="list">
             <div class="op">gemm</div>
-            <div title="gpu" class="result" id="gpu-op-gemm"></div>
-            <div title="cpu" class="result" id="cpu-op-gemm"></div>
-            <div title="npu" class="result" id="npu-op-gemm"></div>
+            <div title="gpu" class="result gpu" id="gpu-op-gemm"></div>
+            <div title="cpu" class="result cpu" id="cpu-op-gemm"></div>
+            <div title="npu" class="result npu" id="npu-op-gemm"></div>
           </div>
           <div class="list">
             <div class="op">matmul</div>
-            <div title="gpu" class="result" id="gpu-op-matmul"></div>
-            <div title="cpu" class="result" id="cpu-op-matmul"></div>
-            <div title="npu" class="result" id="npu-op-matmul"></div>
+            <div title="gpu" class="result gpu" id="gpu-op-matmul"></div>
+            <div title="cpu" class="result cpu" id="cpu-op-matmul"></div>
+            <div title="npu" class="result npu" id="npu-op-matmul"></div>
           </div>
           <div class="list">
             <div class="op">softmax</div>
-            <div title="gpu" class="result" id="gpu-op-softmax"></div>
-            <div title="cpu" class="result" id="cpu-op-softmax"></div>
-            <div title="npu" class="result" id="npu-op-softmax"></div>
+            <div title="gpu" class="result gpu" id="gpu-op-softmax"></div>
+            <div title="cpu" class="result cpu" id="cpu-op-softmax"></div>
+            <div title="npu" class="result npu" id="npu-op-softmax"></div>
           </div>
         </div>
       </div>
@@ -19392,6 +19440,18 @@
   <script src="static/js/idl-test.js"></script>
   <script src="static/js/op-support-limits-test.js"></script>
   <script src="static/js/ops-test.js"></script>
+  <script src="static/js/ops/argMax.js"></script>
+  <script src="static/js/ops/argMin.js"></script>
+  <script src="static/js/ops/batchNormalization.js"></script>
+  <script src="static/js/ops/cast.js"></script>
+  <script src="static/js/ops/clamp.js"></script>
+  <script src="static/js/ops/concat.js"></script>
+  <script src="static/js/ops/conv2d.js"></script>
+  <script src="static/js/ops/convTranspose2d.js"></script>
+  <script src="static/js/ops/cumulativeSum.js"></script>
+  <script src="static/js/ops/gemm.js"></script>
+  <script src="static/js/ops/matmul.js"></script>
+  <script src="static/js/ops/softmax.js"></script>
 </body>
 
 </html>
