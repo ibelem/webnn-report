@@ -202,6 +202,15 @@ header {
   fill: var(--fail);
 }
 
+.ops-g3 .list .result.gpu svg.na g,
+.ops-g3 .list .result.cpu svg.na g {
+  stroke: var(--na);
+}
+
+.ops-g3 .list .result.npu svg.na path {
+  fill: var(--na);
+}
+
 .g3 {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));

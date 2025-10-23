@@ -50,7 +50,6 @@ function setOperationStatus(device, op, status, message = '') {
 		elSvg.setAttribute('class', 'fail');
 	} else {
 		elSvg.setAttribute('class', 'na');
-		el.classList.add('na');
 	}
 }
 
@@ -94,7 +93,7 @@ async function runOperationTests(contextMap = {}) {
 		const context = contextMap[device];
 		for (const op of operationNames) {
 			if (!context) {
-				setOperationStatus(device, op, 'fail', `WebNN ${device.toUpperCase()}: Not Supported - Context not available.`);
+				setOperationStatus(device, op, 'na', `WebNN ${device.toUpperCase()}: Not Supported - Context not available.`);
 				continue;
 			}
 			try {
