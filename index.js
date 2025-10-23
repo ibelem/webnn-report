@@ -17,6 +17,81 @@ async function runTests() {
   }
 }
 
+const ops = [
+  'abs', 'add', 'argMax', 'argMin', 'averagePool2d', 'batchNormalization', 'cast', 'ceil', 'clamp', 'concat',
+  'conv2d', 'convTranspose2d', 'cos', 'cumulativeSum', 'dequantizeLinear', 'div', 'elu', 'equal', 'erf', 'expand',
+  'exp', 'floor', 'gatherElements', 'gather', 'gatherND', 'gelu', 'gemm', 'greater', 'greaterOrEqual', 'gruCell',
+  'gru', 'hardSigmoid', 'hardSwish', 'identity', 'instanceNormalization', 'isInfinite', 'isNaN', 'l2Pool2d',
+  'layerNormalization', 'leakyRelu', 'lesser', 'lesserOrEqual', 'linear', 'logicalAnd', 'logicalNot', 'logicalOr',
+  'logicalXor', 'log', 'lstmCell', 'lstm', 'matmul', 'max', 'maxPool2d', 'min', 'mul', 'neg', 'notEqual', 'pad',
+  'pow', 'prelu', 'quantizeLinear', 'reciprocal', 'reduceL1', 'reduceL2', 'reduceLogSumExp', 'reduceLogSum',
+  'reduceMax', 'reduceMean', 'reduceMin', 'reduceProduct', 'reduceSum', 'reduceSumSquare', 'relu', 'resample2d',
+  'reshape', 'reverse', 'roundEven', 'scatterElements', 'scatterND', 'sigmoid', 'sign', 'sin', 'slice', 'softmax',
+  'softplus', 'softsign', 'split', 'sqrt', 'sub', 'tanh', 'tan', 'tile', 'transpose', 'triangular', 'where'
+];
+
+function loadOpScripts() {
+  const basePath = 'static/js/ops';
+  const loadedScripts = new Set(
+    Array.from(document.querySelectorAll('script[src]'), script => script.getAttribute('src') ?? '')
+  );
+
+  const loaders = ops.map(op => {
+    const src = `${basePath}/${op}.js`;
+    if(op !='tan') {
+      // Chrome blocks tan.js fetch
+      // The tan op function was merged in the sqrt.js
+      if (loadedScripts.has(src)) {
+        return Promise.resolve();
+      }
+
+      return new Promise((resolve, reject) => {
+        const script = document.createElement('script');
+        script.src = src;
+        script.onload = () => resolve();
+        script.onerror = () => reject(new Error(`Failed to load operation script: ${src}`));
+        document.body.appendChild(script);
+      });
+    }
+  });
+
+  return Promise.all(loaders);
+}
+
+function addOpsList() {
+  const opsList = $('#op-list');
+  if (!opsList) {
+    return;
+  }
+
+  opsList.innerHTML = '';
+
+  const fragment = document.createDocumentFragment();
+  const devices = ['gpu', 'cpu', 'npu'];
+
+  ops.forEach(op => {
+    const list = document.createElement('div');
+    list.className = 'list';
+
+    const opLabel = document.createElement('div');
+    opLabel.className = 'op';
+    opLabel.textContent = op;
+    list.appendChild(opLabel);
+
+    devices.forEach(device => {
+      const result = document.createElement('div');
+      result.title = device;
+      result.className = `result ${device}`;
+      result.id = `${device}-op-${op}`;
+      list.appendChild(result);
+    });
+
+    fragment.appendChild(list);
+  });
+
+  opsList.appendChild(fragment);
+}
+
 function addSvgForOps() {
   const opsSection = document.getElementById('ops');
   if (!opsSection) {
@@ -46,6 +121,9 @@ function addSvgForOps() {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
+  addOpsList();
   addSvgForOps();
-  runTests().catch(error => console.error('WebNN report initialisation failed:', error));
+  loadOpScripts()
+    .then(() => runTests())
+    .catch(error => console.error('WebNN report initialisation failed:', error));
 });

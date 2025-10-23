@@ -1,3 +1,66 @@
+const opSupportLimitsDefinedInSpec = {
+	"dequantizeLinear": {
+		"input": {
+			"dataTypes": [
+				"int32",
+				"uint32",
+				"int8",
+				"uint8"
+			]
+		},
+		"output": {
+			"dataTypes": [
+				"float32",
+				"float16"
+			]
+		},
+		"scale": {
+			"dataTypes": [
+				"float32",
+				"float16"
+			]
+		},
+		"zeroPoint": {
+			"dataTypes": [
+				"int32",
+				"uint32",
+				"int8",
+				"uint8"
+			]
+		}
+	},
+	"quantizeLinear": {
+		"input": {
+			"dataTypes": [
+				"float32",
+				"float16"
+			]
+		},
+		"output": {
+			"dataTypes": [
+				"int8",
+				"uint8",
+				"int32",
+				"uint32"
+			]
+		},
+		"scale": {
+			"dataTypes": [
+				"float32",
+				"float16"
+			]
+		},
+		"zeroPoint": {
+			"dataTypes": [
+				"int8",
+				"uint8",
+				"int32",
+				"uint32"
+			]
+		}
+	}
+};
+
 function fillDeviceFeatures(device, json) {
 	if (json.preferredInputLayout !== undefined) {
 		const el = document.getElementById(`${device}-preferredInputLayout`);
@@ -9,24 +72,31 @@ function fillDeviceFeatures(device, json) {
 	}
 }
 
-function fillSpecialRows(prefix, data) {
-	if (Array.isArray(data.dataTypes)) {
-		for (const type of data.dataTypes) {
-			const el = document.getElementById(`${prefix}-dataType-${type}`);
-			if (el) el.innerHTML = '<span class="pass"></span>';
-		}
-	}
+function markSupportStates(prefix, specEntry, implEntry) {
+	const specTypes = Array.isArray(specEntry?.dataTypes) ? specEntry.dataTypes : [];
+	const implTypes = Array.isArray(implEntry?.dataTypes) ? implEntry.dataTypes : [];
+	const implTypeSet = new Set(implTypes);
 
-	if (data.rankRange) {
-		if ('min' in data.rankRange) {
+	specTypes.forEach(type => {
+		const el = document.getElementById(`${prefix}-dataType-${type}`);
+		if (!el) return;
+		el.innerHTML = implTypeSet.has(type) ? '<span class="pass"></span>' : '<span class="fail"></span>';
+	});
+
+	if (implEntry?.rankRange) {
+		if ('min' in implEntry.rankRange) {
 			const el = document.getElementById(`${prefix}-rankRange-min`);
-			if (el) el.textContent = data.rankRange.min;
+			if (el) el.textContent = implEntry.rankRange.min;
 		}
-		if ('max' in data.rankRange) {
+		if ('max' in implEntry.rankRange) {
 			const el = document.getElementById(`${prefix}-rankRange-max`);
-			if (el) el.textContent = data.rankRange.max;
+			if (el) el.textContent = implEntry.rankRange.max;
 		}
 	}
+}
+
+function fillSpecialRows(prefix, specEntry, implEntry) {
+	markSupportStates(prefix, specEntry, implEntry);
 }
 
 function updateOpSupportLimits(device, json) {
@@ -42,9 +112,9 @@ function updateOpSupportLimits(device, json) {
 		if (el) el.textContent = value;
 	};
 
-	if (json.constant) fillSpecialRows(`${device}-constant`, json.constant);
-	if (json.input) fillSpecialRows(`${device}-input`, json.input);
-	if (json.output) fillSpecialRows(`${device}-output`, json.output);
+	if (json.constant) fillSpecialRows(`${device}-constant`, null, json.constant);
+	if (json.input) fillSpecialRows(`${device}-input`, null, json.input);
+	if (json.output) fillSpecialRows(`${device}-output`, null, json.output);
 
 	for (const [opName, opValue] of Object.entries(json)) {
 		if (
@@ -54,29 +124,19 @@ function updateOpSupportLimits(device, json) {
 		) {
 			continue;
 		}
+		const specOpEntry = opSupportLimitsDefinedInSpec[opName] ?? {};
 
 		if (Array.isArray(opValue.dataTypes)) {
-			for (const type of opValue.dataTypes) {
-				fillCell(`${device}-${opName}-dataType-${type}`);
-			}
-			if (opValue.rankRange) {
-				if ('min' in opValue.rankRange) fillRank(`${device}-${opName}-rankRange-min`, opValue.rankRange.min);
-				if ('max' in opValue.rankRange) fillRank(`${device}-${opName}-rankRange-max`, opValue.rankRange.max);
-			}
+			markSupportStates(`${device}-${opName}`, specOpEntry, opValue);
 			continue;
 		}
 
+		const specOpSubEntries = typeof specOpEntry === 'object' && !Array.isArray(specOpEntry) ? specOpEntry : {};
+
 		for (const [subName, subValue] of Object.entries(opValue)) {
 			if (!subValue || typeof subValue !== 'object') continue;
-			if (Array.isArray(subValue.dataTypes)) {
-				for (const type of subValue.dataTypes) {
-					fillCell(`${device}-${opName}-${subName}-dataType-${type}`);
-				}
-			}
-			if (subValue.rankRange) {
-				if ('min' in subValue.rankRange) fillRank(`${device}-${opName}-${subName}-rankRange-min`, subValue.rankRange.min);
-				if ('max' in subValue.rankRange) fillRank(`${device}-${opName}-${subName}-rankRange-max`, subValue.rankRange.max);
-			}
+			const specSubEntry = specOpSubEntries[subName] ?? null;
+			markSupportStates(`${device}-${opName}-${subName}`, specSubEntry, subValue);
 		}
 	}
 }
