@@ -30,17 +30,12 @@
 					0.0999755859375, 0.0999755859375, 0.0999755859375, 0.0999755859375,
 					0.0999755859375, 0.0999755859375, 0.0999755859375, 0.0999755859375,
 					0.0999755859375, 0.0999755859375, 0.0999755859375, 0.0999755859375,
-					0.0999755859375, 0.0999755859375, 0.0999755859375, 0.0999755859375,
 					0.0999755859375, 0.0999755859375, 0.0999755859375, 0.0999755859375
 				]
 			},
 			hiddenState: {
 				descriptor: { dataType: 'float16', shape: [3, 4] },
-				data: [
-					0, 0, 0, 0,
-					0, 0, 0, 0,
-					0, 0, 0, 0
-				]
+				data: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 			},
 			bias: {
 				descriptor: { dataType: 'float16', shape: [12] },
@@ -51,8 +46,8 @@
 				data: [1, 2, 1, 2, 1, 1, 1, 1, 0.5, 0.5, 0.5, 0.5]
 			}
 		},
-		build: (builder, { input, weight, recurrentWeight, hiddenState, bias, recurrentBias }) =>
-			builder.gruCell(
+		build: (builder, { input, weight, recurrentWeight, hiddenState, bias, recurrentBias }) => {
+			return builder.gruCell(
 				input,
 				weight,
 				recurrentWeight,
@@ -62,9 +57,11 @@
 					bias,
 					recurrentBias,
 					resetAfter: false,
+					layout: 'zrn',
 					activations: ['relu', 'relu']
 				}
-			),
+			);
+		},
 		expected: {
 			descriptor: { dataType: 'float16', shape: [3, 4] },
 			data: [

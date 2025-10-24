@@ -3,7 +3,7 @@
   --base-200: oklch(95% 0.03 240);
   --base-300: oklch(92% 0.04 240);
   --base-content: oklch(20% 0.05 240);
-  --primary: oklch(55% 0.3 240);
+  --primary: rgba(94, 77, 215, 1);
   --primary-content: oklch(98% 0.01 240);
   --secondary: oklch(70% 0.25 200);
   --secondary-content: oklch(98% 0.01 200);
@@ -22,9 +22,10 @@
   --main-bg: rgba(244, 244, 244, 1);
   --main: oklch(10.832% 0.00701 285.155);
   --na: rgba(64, 64, 64, 1);
-  --pass: oklch(84.552% 0.20874 130.544);
-  --fail: rgba(255, 0, 129, 0.8);
+  --pass: rgba(156, 230, 57, 0.8);
+  --fail: rgba(255, 0, 129, 0.4);
   --border: rgba(229, 230, 232, 1);
+  --purple: rgba(94, 77, 215, 1);
 }
 
 body {
@@ -106,8 +107,7 @@ header {
 .idl>div {
   padding: 5px 10px;
   border-radius: 5px;
-  background-image: linear-gradient(135deg, #643dd0 0%, #321974 20%, rgba(46, 0, 184, 0.88) 70%, #18122e 99%);
-  background-size: 400% 400%;
+  background-image: linear-gradient(135deg, var(--purple) 0%, #643dd0 30%, #321974 80%, #18122e 99%);
   box-shadow: rgba(0, 0, 0, 0.1) 0px 1px 3px -1px, rgba(0, 0, 0, 0.06) 0px 1px 3px -1px;
   display: grid;
   grid-template-columns: 15fr 1fr;
@@ -180,8 +180,8 @@ header {
 }
 
 .ops-g3 .list .result.npu svg {
-  width: 18px;
-  height: 18px;
+  width: 19px;
+  height: 19px;
 }
 
 .ops-g3 .list .result.gpu svg.pass g,
@@ -195,11 +195,11 @@ header {
 
 .ops-g3 .list .result.gpu svg.fail g,
 .ops-g3 .list .result.cpu svg.fail g {
-  stroke: var(--fail);
+  stroke: var(--error);
 }
 
 .ops-g3 .list .result.npu svg.fail path {
-  fill: var(--fail);
+  fill: var(--error);
 }
 
 .ops-g3 .list .result.gpu svg.na g,
@@ -236,7 +236,7 @@ header {
 
 .npufail {
   color: #fff;
-  background-image: linear-gradient(135deg, #643dd0 0%, var(--fail) 10%, var(--error) 70%) !important;
+  background-image: linear-gradient(135deg, #643dd0 0%, var(--error) 10%, var(--error) 70%) !important;
   background-size: 400% 400%;
 }
 
@@ -254,6 +254,14 @@ header {
 #op-support-limits .card .row {
   display: grid;
   grid-template-columns: 1fr 1fr 2fr 4fr 4fr 2fr;
+}
+
+#op-support-limits .card .row.note {
+  display: flex;
+  flex-direction: row;
+  margin: 5px auto;
+  align-items: center;
+  column-gap: 5px;
 }
 
 #op-support-limits .row div {

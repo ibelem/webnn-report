@@ -1,40 +1,73 @@
 (() => {
-  if (typeof window === 'undefined') return;
-  // Example spec using float32 data from WPT conformance_tests
-  const spec = {
-    inputs: {
-      input: {
-        descriptor: { dataType: 'float32', shape: [2, 4] },
-        data: [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8]
-      },
-      weight: {
-        descriptor: { dataType: 'float32', shape: [4, 16] },
-        data: new Array(64).fill(0.1)
-      },
-      recurrentWeight: {
-        descriptor: { dataType: 'float32', shape: [4, 16] },
-        data: new Array(64).fill(0.2)
-      },
-      hiddenState: {
-        descriptor: { dataType: 'float32', shape: [2, 4] },
-        data: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
-      },
-      cellState: {
-        descriptor: { dataType: 'float32', shape: [2, 4] },
-        data: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
-      }
-    },
-    build: (builder, { input, weight, recurrentWeight, hiddenState, cellState }) => builder.lstmCell(input, weight, recurrentWeight, hiddenState, cellState, 4),
-    expected: {
-      descriptor: { dataType: 'float32', shape: [2, 4] },
-      data: new Array(8).fill(0.5)
-    }
-  };
-  const register = window.registerOperationTest;
-  if (typeof register === 'function') {
-    register('lstmCell', spec);
-    return;
-  }
-  const store = window.operationTests = window.operationTests || {};
-  store.lstmCell = spec;
+	if (typeof window === 'undefined') {
+		return;
+	}
+	const spec = {
+		inputs: {
+			input: {
+				descriptor: { dataType: 'float16', shape: [2, 2] },
+				data: [1, 2, 2, 1]
+			},
+			weight: {
+				descriptor: { dataType: 'float16', shape: [8, 2] },
+				data: [
+					1, -1, 2, -2, 1, -1, 2, -2,
+					1, -1, 2, -2, 1, -1, 2, -2
+				]
+			},
+			recurrentWeight: {
+				descriptor: { dataType: 'float16', shape: [8, 2] },
+				data: [
+					0.0999755859375, 0.0999755859375, 0.0999755859375, 0.0999755859375,
+					0.0999755859375, 0.0999755859375, 0.0999755859375, 0.0999755859375,
+					0.0999755859375, 0.0999755859375, 0.0999755859375, 0.0999755859375,
+					0.0999755859375, 0.0999755859375, 0.0999755859375, 0.0999755859375
+				]
+			},
+			hiddenState: {
+				descriptor: { dataType: 'float16', shape: [2, 2] },
+				data: [0, 0, 0, 0]
+			},
+			cellState: {
+				descriptor: { dataType: 'float16', shape: [2, 2] },
+				data: [0, 0, 0, 0]
+			},
+			bias: {
+				descriptor: { dataType: 'float16', shape: [8] },
+				data: [1, 2, 1, 2, 1, 2, 1, 2]
+			},
+			recurrentBias: {
+				descriptor: { dataType: 'float16', shape: [8] },
+				data: [1, 2, 1, 2, 1, 2, 1, 2]
+			}
+		},
+		build: (builder, { input, weight, recurrentWeight, hiddenState, cellState, bias, recurrentBias }) => {
+			const [nextHidden] = builder.lstmCell(
+				input,
+				weight,
+				recurrentWeight,
+				hiddenState,
+				cellState,
+				2,
+				{
+					bias,
+					recurrentBias,
+					activations: ['relu', 'relu', 'relu']
+				}
+			);
+			// builder.lstmCell returns [hidden, cell]; this spec checks the hidden state.
+			return nextHidden;
+		},
+		expected: {
+			descriptor: { dataType: 'float16', shape: [2, 2] },
+			data: [1, 8, 27, 216]
+		}
+	};
+	const register = window.registerOperationTest;
+	if (typeof register === 'function') {
+		register('lstmCell', spec);
+		return;
+	}
+	const store = window.operationTests = window.operationTests || {};
+	store.lstmCell = spec;
 })();
