@@ -30,6 +30,217 @@ const ops = [
   'softplus', 'softsign', 'split', 'sqrt', 'sub', 'tanh', 'tan', 'tile', 'transpose', 'triangular', 'where'
 ];
 
+function buildOpSupportLimitsGrid() {
+  const container = document.getElementById('op-support-limits');
+  if (!container) {
+    return;
+  }
+
+  const devices = [
+    { id: 'gpu', label: 'GPU' },
+    { id: 'cpu', label: 'CPU' },
+    { id: 'npu', label: 'NPU' }
+  ];
+
+  const dataTypeGroups = [
+    {
+      className: 'float',
+      entries: [
+        { type: 'float16', label: 'f16' },
+        { type: 'float32', label: 'f32' }
+      ]
+    },
+    {
+      className: 'int',
+      entries: [
+        { type: 'int32', label: 'i32' },
+        { type: 'int4', label: 'i4' },
+        { type: 'int64', label: 'i64' },
+        { type: 'int8', label: 'i8' }
+      ]
+    },
+    {
+      className: 'uint',
+      entries: [
+        { type: 'uint32', label: 'u32' },
+        { type: 'uint4', label: 'u4' },
+        { type: 'uint64', label: 'u64' },
+        { type: 'uint8', label: 'u8' }
+      ]
+    }
+  ];
+
+  const createGroupHeaders = (group) => {
+    const wrapper = document.createElement('div');
+    wrapper.className = group.className;
+    group.entries.forEach(entry => {
+      const headerCell = document.createElement('div');
+      headerCell.className = 'header';
+      headerCell.title = entry.type;
+      headerCell.textContent = entry.label;
+      wrapper.appendChild(headerCell);
+    });
+    return wrapper;
+  };
+
+  const createHeaderRow = (deviceLabel) => {
+    const row = document.createElement('div');
+    row.className = 'row line';
+
+    const deviceCell = document.createElement('div');
+    deviceCell.className = 'header device';
+    deviceCell.title = deviceLabel.toLowerCase();
+    deviceCell.textContent = deviceLabel;
+    row.appendChild(deviceCell);
+
+    const limitsCell = document.createElement('div');
+    limitsCell.className = 'header limits';
+    limitsCell.title = 'limits';
+    row.appendChild(limitsCell);
+
+    dataTypeGroups.forEach(group => {
+      row.appendChild(createGroupHeaders(group));
+    });
+
+    const rankGroup = document.createElement('div');
+    rankGroup.className = 'rank-range';
+
+    const minHeader = document.createElement('div');
+    minHeader.className = 'header';
+    minHeader.title = 'rankRange min';
+    minHeader.textContent = 'min';
+    rankGroup.appendChild(minHeader);
+
+    const maxHeader = document.createElement('div');
+    maxHeader.className = 'header';
+    maxHeader.title = 'rankRange max';
+    maxHeader.textContent = 'max';
+    rankGroup.appendChild(maxHeader);
+
+    row.appendChild(rankGroup);
+    return row;
+  };
+
+  const createDataRow = (deviceId, opName, sectionName, label, isFirstRow, isLastRow) => {
+    const row = document.createElement('div');
+    row.className = isLastRow ? 'row line' : 'row';
+
+    const opCell = document.createElement('div');
+    opCell.title = opName;
+    opCell.textContent = opName;
+    if (!isFirstRow) {
+      opCell.classList.add('visibility-hidden');
+    }
+    row.appendChild(opCell);
+
+    const labelCell = document.createElement('div');
+    const labelText = label || 'value';
+    labelCell.title = labelText;
+    labelCell.textContent = labelText;
+    row.appendChild(labelCell);
+
+    const idPrefix = `${deviceId}-${opName}${sectionName ? `-${sectionName}` : ''}`;
+
+    dataTypeGroups.forEach(group => {
+      const wrapper = document.createElement('div');
+      wrapper.className = group.className;
+      group.entries.forEach(entry => {
+        const valueCell = document.createElement('div');
+        valueCell.id = `${idPrefix}-dataType-${entry.type}`;
+        wrapper.appendChild(valueCell);
+      });
+      row.appendChild(wrapper);
+    });
+
+    const rankGroup = document.createElement('div');
+    rankGroup.className = 'rank-range';
+    const minCell = document.createElement('div');
+    minCell.id = `${idPrefix}-rankRange-min`;
+    rankGroup.appendChild(minCell);
+    const maxCell = document.createElement('div');
+    maxCell.id = `${idPrefix}-rankRange-max`;
+    rankGroup.appendChild(maxCell);
+    row.appendChild(rankGroup);
+
+    return row;
+  };
+
+  const buildContent = () => {
+    const spec = window.opSupportLimitsDefinedInSpec;
+    if (!spec) {
+      return;
+    }
+
+    const globalSections = [
+      { key: 'constant', label: 'value' },
+      { key: 'input', label: 'value' },
+      { key: 'output', label: 'value' }
+    ];
+
+    devices.forEach(({ id, label: deviceLabel }) => {
+      let card = document.getElementById(id);
+      if (!card) {
+        card = document.createElement('div');
+        card.id = id;
+        container.appendChild(card);
+      }
+      card.className = `card ${id}`;
+      card.innerHTML = '';
+
+      card.appendChild(createHeaderRow(deviceLabel));
+
+      globalSections.forEach(section => {
+        const row = createDataRow(id, section.key, '', section.label, true, true);
+        card.appendChild(row);
+      });
+
+      ops.forEach(opName => {
+        const specEntry = spec[opName];
+        const sections = [];
+
+        if (specEntry && typeof specEntry === 'object' && !Array.isArray(specEntry)) {
+          if (Array.isArray(specEntry.dataTypes) || specEntry.rankRange) {
+            sections.push({ name: '', label: 'value' });
+          }
+
+          Object.keys(specEntry).forEach(key => {
+            if (key === 'dataTypes' || key === 'rankRange') {
+              return;
+            }
+            const value = specEntry[key];
+            if (value && typeof value === 'object') {
+              sections.push({ name: key, label: key });
+            }
+          });
+        }
+
+        if (sections.length === 0) {
+          sections.push({ name: '', label: 'value' });
+        }
+
+        sections.forEach((section, index) => {
+          const row = createDataRow(id, opName, section.name, section.label, index === 0, index === sections.length - 1);
+          card.appendChild(row);
+        });
+      });
+
+      const noteRow = document.createElement('div');
+      noteRow.className = 'row note';
+      const noteIcon = document.createElement('span');
+      noteIcon.className = 'fail';
+      noteRow.appendChild(noteIcon);
+      noteRow.appendChild(document.createTextNode(' Allowed data types in WebNN Spec'));
+      card.appendChild(noteRow);
+    });
+  };
+
+  if (window.opSupportLimitsDefinedInSpec) {
+    buildContent();
+  } else {
+    window.addEventListener('opSupportLimitsSpecReady', buildContent, { once: true });
+  }
+}
+
 function loadOpScripts() {
   const basePath = 'static/js/ops';
   const loadedScripts = new Set(
@@ -121,6 +332,7 @@ function addSvgForOps() {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
+  buildOpSupportLimitsGrid();
   addOpsList();
   addSvgForOps();
   loadOpScripts()

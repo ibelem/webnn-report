@@ -2543,6 +2543,11 @@ const opSupportLimitsDefinedInSpec = {
   }
 };
 
+if (typeof window !== 'undefined') {
+  window.opSupportLimitsDefinedInSpec = opSupportLimitsDefinedInSpec;
+  window.dispatchEvent(new CustomEvent('opSupportLimitsSpecReady'));
+}
+
 let cpuJson, gpuJson, npuJson;
 
 function fillDeviceFeatures(device, json) {
