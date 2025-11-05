@@ -36,11 +36,7 @@ function buildOpSupportLimitsGrid() {
     return;
   }
 
-  const devices = [
-    { id: 'gpu', label: 'GPU' },
-    { id: 'cpu', label: 'CPU' },
-    { id: 'npu', label: 'NPU' }
-  ];
+  const backend = 'backend';
 
   const dataTypeGroups = [
     {
@@ -83,14 +79,14 @@ function buildOpSupportLimitsGrid() {
     return wrapper;
   };
 
-  const createHeaderRow = (deviceLabel) => {
+  const createHeaderRow = (backend) => {
     const row = document.createElement('div');
     row.className = 'row line';
 
     const deviceCell = document.createElement('div');
     deviceCell.className = 'header device';
-    deviceCell.title = deviceLabel.toLowerCase();
-    deviceCell.textContent = deviceLabel;
+    deviceCell.title = backend.toLowerCase();
+    deviceCell.textContent = 'Limits';
     row.appendChild(deviceCell);
 
     const limitsCell = document.createElement('div');
@@ -121,7 +117,7 @@ function buildOpSupportLimitsGrid() {
     return row;
   };
 
-  const createDataRow = (deviceId, opName, sectionName, label, isFirstRow, isLastRow) => {
+  const createDataRow = (opName, sectionName, label, isFirstRow, isLastRow) => {
     const row = document.createElement('div');
     row.className = isLastRow ? 'row line' : 'row';
 
@@ -139,7 +135,7 @@ function buildOpSupportLimitsGrid() {
     labelCell.textContent = labelText;
     row.appendChild(labelCell);
 
-    const idPrefix = `${deviceId}-${opName}${sectionName ? `-${sectionName}` : ''}`;
+    const idPrefix = `${opName}${sectionName ? `-${sectionName}` : ''}`;
 
     dataTypeGroups.forEach(group => {
       const wrapper = document.createElement('div');
@@ -177,20 +173,19 @@ function buildOpSupportLimitsGrid() {
       { key: 'output', label: 'value' }
     ];
 
-    devices.forEach(({ id, label: deviceLabel }) => {
-      let card = document.getElementById(id);
+      let card = document.getElementById('#backend');
       if (!card) {
         card = document.createElement('div');
-        card.id = id;
+        card.id = 'backend';
         container.appendChild(card);
       }
-      card.className = `card ${id}`;
+      card.className = `card backend`;
       card.innerHTML = '';
 
-      card.appendChild(createHeaderRow(deviceLabel));
+      card.appendChild(createHeaderRow(backend));
 
       globalSections.forEach(section => {
-        const row = createDataRow(id, section.key, '', section.label, true, true);
+        const row = createDataRow(section.key, '', section.label, true, true);
         card.appendChild(row);
       });
 
@@ -219,7 +214,7 @@ function buildOpSupportLimitsGrid() {
         }
 
         sections.forEach((section, index) => {
-          const row = createDataRow(id, opName, section.name, section.label, index === 0, index === sections.length - 1);
+          const row = createDataRow(opName, section.name, section.label, index === 0, index === sections.length - 1);
           card.appendChild(row);
         });
       });
@@ -229,9 +224,8 @@ function buildOpSupportLimitsGrid() {
       const noteIcon = document.createElement('span');
       noteIcon.className = 'fail';
       noteRow.appendChild(noteIcon);
-      noteRow.appendChild(document.createTextNode(' Allowed data types in WebNN Spec'));
+      noteRow.appendChild(document.createTextNode('Allowed data types in WebNN Spec'));
       card.appendChild(noteRow);
-    });
   };
 
   if (window.opSupportLimitsDefinedInSpec) {

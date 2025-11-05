@@ -83,58 +83,23 @@
       <div class="idl" id="idl"></div>
     </div>
     <div>
-      <div id="fallback" class="g3">
-        <div id="fallback-gpu">
-          <div class="title">GPU</div>
-          <div class="fallback" id="gpu-fallback"></div>
-        </div>
-        <div id="fallback-cpu">
-          <div class="title">CPU</div>
-          <div class="fallback" id="cpu-fallback"></div>
-        </div>
-        <div id="fallback-npu">
-          <div class="title">NPU</div>
-          <div class="fallback" id="npu-fallback"></div>
-        </div>
-      </div>
       <div id="ops">
-        <div class="title">WebNN Operations · FP16 · GPU CPU NPU </div>
+        <div class="title">WebNN Operations · FP16 · powerPreference </div>
         <div class="ops-g3" id="op-list"></div>
       </div>
       <div id="next" class="g3">
-        <div id="next-gpu">
-          <div class="title">GPU</div>
-          <div class="list">
-            <div class="item">preferredInputLayout</div>
-            <div class="value" id="gpu-preferredInputLayout"></div>
-            <div class="item">maxTensorByteLength</div>
-            <div class="value" id="gpu-maxTensorByteLength"></div>
-          </div>
-        </div>
         <div id="next-cpu">
-          <div class="title">CPU</div>
+          <div class="title">Backend</div>
           <div class="list">
             <div class="item">preferredInputLayout</div>
-            <div class="value" id="cpu-preferredInputLayout"></div>
+            <div class="value" id="preferredInputLayout"></div>
             <div class="item">maxTensorByteLength</div>
-            <div class="value" id="cpu-maxTensorByteLength"></div>
+            <div class="value" id="maxTensorByteLength"></div>
           </div>
         </div>
-        <div id="next-npu">
-          <div class="title">NPU</div>
-          <div class="list">
-            <div class="item">preferredInputLayout</div>
-            <div class="value" id="npu-preferredInputLayout"></div>
-            <div class="item">maxTensorByteLength</div>
-            <div class="value" id="npu-maxTensorByteLength"></div>
-          </div>
-        </div>
+
       </div>
-      <div id="op-support-limits" class="g3">
-        <div id="gpu" class="card gpu"></div>
-        <div id="cpu" class="card cpu"></div>
-        <div id="npu" class="card npu"></div>
-      </div>
+      <div id="op-support-limits"></div>
     </div>
   </div>
   <footer>

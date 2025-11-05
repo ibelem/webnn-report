@@ -223,6 +223,21 @@ header {
   margin-bottom: 10px;
 }
 
+#op-support-limits {
+  font-size: 0.7rem;
+  background-color: #fff;
+  padding: 5px 10px;
+  border-radius: 5px;
+  box-shadow: rgba(0, 0, 0, 0.1) 0px 1px 3px -1px, rgba(0, 0, 0, 0.06) 0px 1px 3px -1px;
+}
+
+.card.backend {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  align-items: start;
+  column-gap: 10px;
+}
+
 .g3>div {
   background-color: #fff;
   padding: 5px 10px;
@@ -279,11 +294,11 @@ header {
 }
 
 #op-support-limits .row>div:first-child {
-  min-width: 50px;
+  min-width: 80px;
 }
 
 #op-support-limits .row>div:first-child + div {
-  min-width: 50px;
+  min-width: 60px;
 }
 
 .visibility-hidden {

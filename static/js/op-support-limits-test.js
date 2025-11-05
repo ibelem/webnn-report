@@ -2548,15 +2548,13 @@ if (typeof window !== 'undefined') {
   window.dispatchEvent(new CustomEvent('opSupportLimitsSpecReady'));
 }
 
-let cpuJson, gpuJson, npuJson;
-
-function fillDeviceFeatures(device, json) {
+function fillFeatures(json) {
 	if (json.preferredInputLayout !== undefined) {
-		const el = document.getElementById(`${device}-preferredInputLayout`);
+		const el = document.getElementById(`preferredInputLayout`);
 		if (el) el.textContent = json.preferredInputLayout;
 	}
 	if (json.maxTensorByteLength !== undefined) {
-		const el = document.getElementById(`${device}-maxTensorByteLength`);
+		const el = document.getElementById(`maxTensorByteLength`);
 		if (el) el.textContent = json.maxTensorByteLength;
 	}
 }
@@ -2588,12 +2586,13 @@ function fillSpecialRows(prefix, specEntry, implEntry) {
 	markSupportStates(prefix, specEntry, implEntry);
 }
 
-function updateOpSupportLimits(device, json) {
-	fillDeviceFeatures(device, json);
+function updateOpSupportLimits(json) {
+  const spec = typeof opSupportLimitsDefinedInSpec === 'object' ? opSupportLimitsDefinedInSpec : {};
+  fillFeatures(json);
 
-	if (json.constant) fillSpecialRows(`${device}-constant`, null, json.constant);
-	if (json.input) fillSpecialRows(`${device}-input`, null, json.input);
-	if (json.output) fillSpecialRows(`${device}-output`, null, json.output);
+  if (json.constant) fillSpecialRows(`constant`, spec.constant ?? null, json.constant);
+  if (json.input) fillSpecialRows(`input`, spec.input ?? null, json.input);
+  if (json.output) fillSpecialRows(`output`, spec.output ?? null, json.output);
 
 	for (const [opName, opValue] of Object.entries(json)) {
 		if (
@@ -2606,7 +2605,7 @@ function updateOpSupportLimits(device, json) {
 		const specOpEntry = opSupportLimitsDefinedInSpec[opName] ?? {};
 
 		if (Array.isArray(opValue.dataTypes)) {
-			markSupportStates(`${device}-${opName}`, specOpEntry, opValue);
+			markSupportStates(`${opName}`, specOpEntry, opValue);
 			continue;
 		}
 
@@ -2615,7 +2614,7 @@ function updateOpSupportLimits(device, json) {
 		for (const [subName, subValue] of Object.entries(opValue)) {
 			if (!subValue || typeof subValue !== 'object') continue;
 			const specSubEntry = specOpSubEntries[subName] ?? null;
-			markSupportStates(`${device}-${opName}-${subName}`, specSubEntry, subValue);
+			markSupportStates(`${opName}-${subName}`, specSubEntry, subValue);
 		}
 	}
 }
@@ -2660,172 +2659,55 @@ function deepEqual(a, b) {
   return true;
 }
 
-function fallbackCheck() {
-  const cpuFallbackEl = document.getElementById('cpu-fallback');
-  const gpuFallbackEl = document.getElementById('gpu-fallback');
-  const npuFallbackEl = document.getElementById('npu-fallback');
-
-  const renderStatus = (el, status) => {
-    if (!el || !status) {
-      return;
-    }
-    el.innerHTML = '';
-    if (!status.text) {
-      return;
-    }
-    if (status.iconClass) {
-      const badge = document.createElement('span');
-      badge.className = status.iconClass;
-      el.appendChild(badge);
-      el.appendChild(document.createTextNode(` ${status.text}`));
-      return;
-    }
-    el.textContent = status.text;
-  };
-
-  const statuses = {
-    cpu: cpuJson
-      ? { iconClass: 'pass', text: 'Dedicated CPU implementation' }
-      : { iconClass: 'fail', text: 'CPU context unavailable' },
-    gpu: gpuJson
-      ? { iconClass: 'pass', text: 'Dedicated GPU implementation' }
-      : { iconClass: 'fail', text: 'GPU context unavailable' },
-    npu: npuJson
-      ? { iconClass: 'pass', text: 'Dedicated NPU implementation' }
-      : { iconClass: 'fail', text: 'NPU context unavailable' }
-  };
-
-  if (!cpuJson || !gpuJson) {
-    renderStatus(cpuFallbackEl, statuses.cpu);
-    renderStatus(gpuFallbackEl, statuses.gpu);
-    renderStatus(npuFallbackEl, statuses.npu);
-    return;
-  }
-
-  const gpuMatchesCpu = deepEqual(gpuJson, cpuJson);
-  if (gpuMatchesCpu) {
-    statuses.gpu = { iconClass: 'fail', text: 'Fallback to CPU' };
-    statuses.cpu = { iconClass: 'fail', text: 'CPU shared with GPU' };
-  }
-
-  if (npuJson == null) {
-    renderStatus(cpuFallbackEl, statuses.cpu);
-    renderStatus(gpuFallbackEl, statuses.gpu);
-    renderStatus(npuFallbackEl, statuses.npu);
-    return;
-  }
-
-  const npuMatchesGpu = deepEqual(npuJson, gpuJson);
-  const npuMatchesCpu = deepEqual(npuJson, cpuJson);
-
-  if (npuMatchesGpu && gpuMatchesCpu) {
-    statuses.npu = { iconClass: 'fail', text: 'Fallback to CPU (shared with GPU)' };
-    statuses.cpu = { iconClass: 'fail', text: 'CPU shared with GPU & NPU' };
-    statuses.gpu = { iconClass: 'fail', text: 'Fallback to CPU' };
-  } else if (npuMatchesGpu) {
-    statuses.npu = { iconClass: 'fail', text: 'Fallback to GPU' };
-  } else if (npuMatchesCpu) {
-    statuses.npu = { iconClass: 'fail', text: 'Fallback to CPU' };
-    if (!gpuMatchesCpu) {
-      statuses.cpu = { iconClass: 'fail', text: 'CPU shared with NPU' };
-    }
-  }
-
-  renderStatus(cpuFallbackEl, statuses.cpu);
-  renderStatus(gpuFallbackEl, statuses.gpu);
-  renderStatus(npuFallbackEl, statuses.npu);
-}
-
 async function runOpSupportLimitsTests() {
-	const cpuDiv = $('#cpu');
-	const gpuDiv = $('#gpu');
-	const npuDiv = $('#npu');
-	const nextNpuDiv = $('#next-npu');
+	const opSupportLimits = $('#op-support-limits');
 	const contexts = {};
 
 	if (!navigator.ml?.createContext) {
 		const message = 'WebNN is not available in this browser.';
-		if (cpuDiv) {
-			cpuDiv.textContent = message;
-			cpuDiv.setAttribute('class', 'cpu fail');
-		}
-		if (gpuDiv) {
-			gpuDiv.textContent = message;
-			gpuDiv.setAttribute('class', 'gpu fail');
-		}
-		if (npuDiv) {
-			npuDiv.textContent = message;
-			npuDiv.setAttribute('class', 'npufail');
-		}
-		if (nextNpuDiv) {
-			nextNpuDiv.textContent = message;
-			nextNpuDiv.setAttribute('class', 'npufail');
+		if (opSupportLimits) {
+			opSupportLimits.textContent = message;
+			opSupportLimits.setAttribute('class', 'fail');
 		}
 		return contexts;
 	}
 
 	try {
+		const context = await navigator.ml.createContext({ powerPreference: 'default' });
+		try {
+			json = context.opSupportLimits();
+			console.log(json);
+			updateOpSupportLimits(json);
+		} catch (error) {
+			console.warn('Failed to read op support limits:', error);
+		}
+	} catch (error) {
+		if (opSupportLimits) {
+			opSupportLimits.textContent = 'Failed to create context';
+			opSupportLimits.setAttribute('class', 'fail');
+		}
+	}
+
+  try {
 		const cpuContext = await navigator.ml.createContext({ deviceType: 'cpu' });
 		contexts.cpu = cpuContext;
-		try {
-			cpuJson = cpuContext.opSupportLimits();
-			console.log('-- cpu --');
-			console.log(cpuJson);
-			updateOpSupportLimits('cpu', cpuJson);
-		} catch (error) {
-			console.warn('Failed to read CPU op support limits:', error);
-		}
-	} catch (error) {
-		if (cpuDiv) {
-			cpuDiv.textContent = 'Failed to create CPU device context';
-			cpuDiv.setAttribute('class', 'cpu fail');
-		}
-		contexts.cpu = null;
-	}
+  } catch (error) {
+    contexts.cpu = null;
+  }
 
-	try {
+  try {
 		const gpuContext = await navigator.ml.createContext({ deviceType: 'gpu' });
 		contexts.gpu = gpuContext;
-		try {
-			gpuJson = gpuContext.opSupportLimits();
-			console.log('-- gpu --');
-			console.log(gpuJson);
-			updateOpSupportLimits('gpu', gpuJson);
-		} catch (error) {
-			console.warn('Failed to read GPU op support limits:', error);
-		}
-	} catch (error) {
-		if (gpuDiv) {
-			gpuDiv.textContent = 'Failed to create GPU device context';
-			gpuDiv.setAttribute('class', 'gpu fail');
-		}
-		contexts.gpu = null;
-	}
+  } catch (error) {
+    contexts.gpu = null;
+  }
 
-	try {
+  try {
 		const npuContext = await navigator.ml.createContext({ deviceType: 'npu' });
 		contexts.npu = npuContext;
-		try {
-			npuJson = npuContext.opSupportLimits();
-			console.log('-- npu --');
-			console.log(npuJson);
-			updateOpSupportLimits('npu', npuJson);
-		} catch (error) {
-			console.warn('Failed to read NPU op support limits:', error);
-		}
-	} catch (error) {
-		if (npuDiv) {
-			npuDiv.textContent = 'NPU device is not supported';
-			npuDiv.setAttribute('class', 'npufail');
-		}
-		if (nextNpuDiv) {
-			nextNpuDiv.textContent = 'NPU device is not supported';
-			nextNpuDiv.setAttribute('class', 'npufail');
-		}
-		contexts.npu = null;
-	}
-
-	fallbackCheck();
+  } catch (error) {
+    contexts.npu = null;
+  }
 
 	return contexts;
 }
