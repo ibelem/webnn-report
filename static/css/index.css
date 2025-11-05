@@ -264,9 +264,16 @@ header {
   column-gap: 10px;
 }
 
-#op-support-limits .card .row:first-child {
+#op-support-limits .card #b_1,
+#op-support-limits .card #b_2,
+#op-support-limits .card #b_3 {
   border-bottom: 1px solid rgba(0, 0, 0, 0.2);
   padding-bottom: 3px;
+}
+
+#op-support-limits .card #b_2,
+#op-support-limits .card #b_3 {
+  display: none;
 }
 
 #op-support-limits .card .row {
@@ -475,6 +482,9 @@ footer {
 }
 
 @media (min-width: 768px) {
+  #op-support-limits .card #b_2 {
+    display: grid;
+  }
 }
 @media (min-width: 860px) {
     header {
@@ -496,7 +506,9 @@ footer {
 }
 
 @media (min-width: 1024px) {
-
+  #op-support-limits .card #b_3 {
+    display: grid;
+  }
 }
 
 @media (min-width: 1280px) {

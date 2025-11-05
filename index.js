@@ -79,15 +79,16 @@ function buildOpSupportLimitsGrid() {
     return wrapper;
   };
 
-  const createHeaderRow = (backend) => {
+  const createHeaderRow = (id, backend) => {
     const row = document.createElement('div');
+    row.id = id;
     row.className = 'row line';
 
-    const deviceCell = document.createElement('div');
-    deviceCell.className = 'header device';
-    deviceCell.title = backend.toLowerCase();
-    deviceCell.textContent = 'Limits';
-    row.appendChild(deviceCell);
+    const backendCell = document.createElement('div');
+    backendCell.className = 'header backend';
+    backendCell.title = backend.toLowerCase();
+    backendCell.textContent = 'Limits';
+    row.appendChild(backendCell);
 
     const limitsCell = document.createElement('div');
     limitsCell.className = 'header limits';
@@ -182,7 +183,9 @@ function buildOpSupportLimitsGrid() {
       card.className = `card backend`;
       card.innerHTML = '';
 
-      card.appendChild(createHeaderRow(backend));
+      card.appendChild(createHeaderRow('b_1', backend));
+      card.appendChild(createHeaderRow('b_2', backend));
+      card.appendChild(createHeaderRow('b_3', backend));
 
       globalSections.forEach(section => {
         const row = createDataRow(section.key, '', section.label, true, true);
