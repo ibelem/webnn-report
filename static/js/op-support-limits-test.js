@@ -2548,6 +2548,293 @@ if (typeof window !== 'undefined') {
   window.dispatchEvent(new CustomEvent('opSupportLimitsSpecReady'));
 }
 
+function getOSandVersion() {
+
+}
+
+let lastOpSupportLimits = null;
+
+let osInfoPromise = null;
+
+function versionStringToArray(version) {
+  if (!version || typeof version !== 'string') {
+    return null;
+  }
+  const sanitized = version.replace(/_/g, '.');
+  const parts = sanitized.split('.').map(part => {
+    const parsed = Number.parseInt(part, 10);
+    return Number.isNaN(parsed) ? 0 : parsed;
+  });
+  return parts.length ? parts : null;
+}
+
+function versionAtLeast(version, target) {
+  const currentParts = versionStringToArray(version);
+  const targetParts = versionStringToArray(target);
+  if (!currentParts || !targetParts) {
+    return false;
+  }
+  const maxLength = Math.max(currentParts.length, targetParts.length);
+  for (let i = 0; i < maxLength; i += 1) {
+    const current = currentParts[i] ?? 0;
+    const expected = targetParts[i] ?? 0;
+    if (current > expected) return true;
+    if (current < expected) return false;
+  }
+  return true;
+}
+
+async function getOSandVersion() {
+  if (osInfoPromise) {
+    return osInfoPromise;
+  }
+
+  osInfoPromise = (async () => {
+    if (typeof navigator === 'undefined') {
+      return {
+        name: 'unknown',
+        version: 'unknown',
+        confidence: 'low',
+        detail: 'Navigator API unavailable',
+        architecture: null,
+        platformVersion: null,
+        platformVersionMajor: null
+      };
+    }
+
+    const ua = navigator.userAgent || '';
+    const platform = navigator.userAgentData?.platform || navigator.platform || '';
+    let highEntropy = null;
+    if (navigator.userAgentData && typeof navigator.userAgentData.getHighEntropyValues === 'function') {
+      try {
+        highEntropy = await navigator.userAgentData.getHighEntropyValues([
+          'platformVersion',
+          'architecture',
+          'model'
+        ]);
+      } catch (error) {
+        console.warn('Failed to read UA high entropy values:', error);
+      }
+    }
+
+    const platformVersion = typeof highEntropy?.platformVersion === 'string'
+      ? highEntropy.platformVersion
+      : null;
+    const platformVersionMajor = platformVersion
+      ? Number.parseInt(platformVersion.split('.')[0], 10) || null
+      : null;
+    const architecture = highEntropy?.architecture || '';
+    const model = highEntropy?.model || '';
+
+    const info = {
+      name: 'unknown',
+      version: 'unknown',
+      confidence: 'low',
+      detail: '',
+      architecture,
+      platformVersion,
+      platformVersionMajor
+    };
+
+    const setResult = (name, version, confidence, detail) => {
+      info.name = name;
+      info.version = version || 'unknown';
+      info.confidence = confidence;
+      info.detail = detail;
+    };
+
+    if (/cros/i.test(ua) || /chrome os/i.test(platform) || /chromebook/i.test(model)) {
+      const match = ua.match(/CrOS [^\s]+ ([\d\.]+)/i);
+      setResult('ChromeOS', match ? match[1].replace(/_/g, '.') : platformVersion || 'unknown', 'medium', 'Detected CrOS signature');
+      return info;
+    }
+
+    if (/android/i.test(ua)) {
+      const match = ua.match(/Android\s+([\d\.]+)/i);
+      setResult('Android', match ? match[1] : platformVersion || 'unknown', 'high', 'Android UA');
+      return info;
+    }
+
+    if (/iphone|ipad|ipod/i.test(ua)) {
+      const match = ua.match(/OS\s([\d_]+)/i);
+      setResult('iOS', match ? match[1].replace(/_/g, '.') : 'unknown', 'medium', 'iOS device UA');
+      return info;
+    }
+
+    if (/mac os x/i.test(ua) || /macintosh/i.test(platform)) {
+      const match = ua.match(/Mac OS X\s([\d_]+)/i);
+      setResult('macOS', match ? match[1].replace(/_/g, '.') : platformVersion || 'unknown', match ? 'high' : 'medium', 'macOS UA detected');
+      return info;
+    }
+
+    if (/windows/i.test(ua) || /win/i.test(platform)) {
+      const versionMatch = ua.match(/Windows NT\s([\d\.]+)/i);
+      const derivedVersion = versionMatch ? versionMatch[1] : platformVersion || 'unknown';
+      setResult('Windows', derivedVersion, platformVersion ? 'medium' : 'low', 'Windows UA');
+      return info;
+    }
+
+    if (/linux/i.test(ua)) {
+      setResult('Linux', platformVersion || 'unknown', 'low', 'Linux UA');
+      return info;
+    }
+
+    if (platform) {
+      setResult(platform, platformVersion || 'unknown', 'low', 'Derived from platform field');
+      return info;
+    }
+
+    return info;
+  })();
+
+  return osInfoPromise;
+}
+
+const backendLabels = {
+  tflite: 'TensorFlow Lite',
+  coreml: 'Core ML',
+  onnx: 'ONNX Runtime (Windows ML)',
+  directml: 'DirectML',
+  unknown: 'unknown'
+};
+
+function determineCandidateBackends(osInfo) {
+  const order = [];
+  switch ((osInfo.name || '').toLowerCase()) {
+    case 'chromeos':
+      order.push('tflite');
+      break;
+    case 'linux':
+      order.push('tflite');
+      break;
+    case 'android':
+      order.push('tflite');
+      break;
+    case 'ios':
+      order.push('tflite');
+      break;
+    case 'macos': {
+      const isAppleSilicon = (osInfo.architecture || '').toLowerCase().includes('arm');
+      if (isAppleSilicon && versionAtLeast(osInfo.version, '14.4')) {
+        order.push('coreml');
+      }
+      order.push('tflite');
+      break;
+    }
+    case 'windows': {
+      const major = osInfo.platformVersionMajor;
+      if (typeof major === 'number' && major >= 15) {
+        order.push('onnx');
+      }
+      order.push('directml');
+      order.push('tflite');
+      break;
+    }
+    default:
+      order.push('tflite');
+      break;
+  }
+  return order;
+}
+
+async function backendDetection(limits) {
+  const data = limits ?? lastOpSupportLimits;
+  const osInfo = await getOSandVersion();
+
+  if (!data || typeof data !== 'object') {
+    return {
+      backend: backendLabels.unknown,
+      confidence: 'low',
+      reason: 'No op support limits data available.',
+      candidates: [],
+      os: {
+        name: osInfo.name,
+        version: osInfo.version,
+        detail: osInfo.detail
+      }
+    };
+  }
+
+  const layout = typeof data.preferredInputLayout === 'string'
+    ? data.preferredInputLayout.toLowerCase()
+    : '';
+  const inputTypes = new Set(Array.isArray(data.input?.dataTypes) ? data.input.dataTypes : []);
+  const constantTypes = new Set(Array.isArray(data.constant?.dataTypes) ? data.constant.dataTypes : []);
+  const inputRankMax = data.input?.rankRange?.max;
+
+  const candidateOrder = determineCandidateBackends(osInfo);
+
+  const heuristics = [];
+
+  if (layout === 'nhwc') {
+    heuristics.push({
+      id: 'tflite',
+      reason: 'preferredInputLayout is NHWC (channels-last), matching the TensorFlow Lite backend defaults.',
+      confidence: 'high'
+    });
+  }
+
+  const coremlAllowed = ['float32', 'float16', 'int32'];
+  const onlyCoremlTypes = inputTypes.size > 0 && Array.from(inputTypes).every(type => coremlAllowed.includes(type));
+  if (onlyCoremlTypes && (inputRankMax === undefined || inputRankMax <= 5)) {
+    heuristics.push({
+      id: 'coreml',
+      reason: 'Input tensors are limited to float16/float32/int32 with max rank <= 5, consistent with Core ML limits.',
+      confidence: 'medium'
+    });
+  }
+
+  if (inputTypes.has('uint4') || inputTypes.has('int4') || constantTypes.has('uint4') || constantTypes.has('int4')) {
+    heuristics.push({
+      id: 'onnx',
+      reason: '4-bit tensor data types are exposed, which is characteristic of the ONNX Runtime backend.',
+      confidence: 'medium'
+    });
+  }
+
+  if (!heuristics.length && layout === 'nchw' && inputTypes.size > 0) {
+    heuristics.push({
+      id: 'directml',
+      reason: 'Channels-first layout with broad tensor support and no 4-bit types points to DirectML.',
+      confidence: 'low'
+    });
+  }
+
+  const matchedHeuristic = heuristics.find(h => candidateOrder.includes(h.id));
+  const backendId = matchedHeuristic?.id ?? candidateOrder[0] ?? 'unknown';
+  const backendName = backendLabels[backendId] ?? backendId;
+
+  let confidence = matchedHeuristic?.confidence ?? 'low';
+  let reason = matchedHeuristic?.reason ?? 'Selected from OS-specific fallback order.';
+
+  if (!matchedHeuristic && backendId === 'unknown') {
+    reason = 'Unable to determine backend from available limits and OS hints.';
+  }
+
+  if (matchedHeuristic && heuristics.filter(h => h.id === matchedHeuristic.id).length > 1) {
+    confidence = 'medium';
+  }
+
+  const result = {
+    backend: backendName,
+    confidence,
+    reason,
+    candidates: candidateOrder.map(id => backendLabels[id] ?? id),
+    os: {
+      name: osInfo.name,
+      version: osInfo.version,
+      detail: osInfo.detail
+    }
+  };
+
+  return result;
+}
+
+if (typeof window !== 'undefined') {
+  window.backendDetection = backendDetection;
+  window.getOSandVersion = getOSandVersion;
+}
+
 function fillFeatures(json) {
 	if (json.preferredInputLayout !== undefined) {
 		const el = document.getElementById(`preferredInputLayout`);
@@ -2660,8 +2947,18 @@ function deepEqual(a, b) {
 }
 
 async function runOpSupportLimitsTests() {
+  const os = $('#os');
+  const backend = $('#backend');
+  const backendStatus = $('#backend-status');
 	const opSupportLimits = $('#op-support-limits');
 	const contexts = {};
+
+  function capitalizeFirstLetter(str) {
+    if (str.length === 0) {
+      return "";
+    }
+    return str.charAt(0).toUpperCase() + str.slice(1);
+  }
 
 	if (!navigator.ml?.createContext) {
 		const message = 'WebNN is not available in this browser.';
@@ -2673,11 +2970,24 @@ async function runOpSupportLimitsTests() {
 	}
 
 	try {
-		const context = await navigator.ml.createContext({ powerPreference: 'default' });
+		const context = await navigator.ml.createContext({ deviceType: 'gpu' });
 		try {
-			json = context.opSupportLimits();
-			console.log(json);
-			updateOpSupportLimits(json);
+            const opSupport = context.opSupportLimits();
+            lastOpSupportLimits = opSupport;
+            if (typeof window !== 'undefined') {
+              window.lastOpSupportLimits = opSupport;
+            }
+            console.log(opSupport);
+            const backendInfo = await backendDetection(opSupport);
+            if (typeof window !== 'undefined') {
+              window.lastBackendDetection = backendInfo;
+            }
+            console.log('WebNN backend detection:', backendInfo);
+            os.innerHTML = `${backendInfo.os.name} ${backendInfo.os.version}`;
+            backend.innerHTML = backendInfo.backend;
+            backendStatus.setAttribute('title', `Confidence: ${capitalizeFirstLetter(backendInfo.confidence)}`);
+            backendStatus.setAttribute('class', backendInfo.confidence);
+            updateOpSupportLimits(opSupport);
 		} catch (error) {
 			console.warn('Failed to read op support limits:', error);
 		}

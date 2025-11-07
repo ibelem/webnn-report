@@ -331,7 +331,7 @@ async function runIdlTests() {
 	for (const [iface, ifaceTests] of Object.entries(grouped)) {
 		const div = document.createElement('div');
 		div.setAttribute('class', iface.toLowerCase());
-		div.innerHTML = `<div class="interface title">${iface}</div><div></div>`;
+		div.innerHTML = `<div class="interface title">${iface}</div><div class="title_line"></div>`;
 		for (const test of ifaceTests) {
 			let supported;
 			try {

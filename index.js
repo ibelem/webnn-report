@@ -184,8 +184,6 @@ function buildOpSupportLimitsGrid() {
       card.innerHTML = '';
 
       card.appendChild(createHeaderRow('b_1', backend));
-      card.appendChild(createHeaderRow('b_2', backend));
-      card.appendChild(createHeaderRow('b_3', backend));
 
       globalSections.forEach(section => {
         const row = createDataRow(section.key, '', section.label, true, true);
