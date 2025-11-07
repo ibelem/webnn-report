@@ -385,12 +385,12 @@ footer {
   display: inline-flex;
   align-items: center;
   gap: 4px;
-  padding: 4px 8px;
+  padding: 4px 10px 4px 8px;
   border-radius: 999px;
   background-color: rgba(212, 212, 212, 0.5);
   -webkit-backdrop-filter: blur(1px);
   backdrop-filter: blur(1px);
-  color:var(--error);
+  color:var(--primary);
   font-size: 0.75rem;
   text-decoration: none;
   border: 1px solid rgba(255, 255, 255, 0.2);
@@ -400,7 +400,20 @@ footer {
   transition: transform 0.3s ease, filter 0.3s ease;
 }
 
-.fix-me-link::before {
+.fix-me svg {
+  width: 21px;
+  height: 21px;
+}
+
+.fix-me svg path {
+  fill: var(--primary);
+}
+
+.fix-me:hover svg path {
+  fill: var(--success);
+}
+
+/* .fix-me-link::before {
   content: 'GH';
   display: inline-flex;
   align-items: center;
@@ -410,7 +423,7 @@ footer {
   border-radius: 50%;
   background-color: var(--error-01);
   letter-spacing: 0;
-}
+} */
 
 .fix-me-link::after {
   content: '';
