@@ -84,6 +84,10 @@ header {
   row-gap: 5px;
 }
 
+.legend.none {
+  display: none;
+}
+
 .legend>div {
   display: flex;
   flex-direction: row;

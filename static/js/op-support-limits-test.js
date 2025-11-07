@@ -2947,7 +2947,7 @@ function deepEqual(a, b) {
 }
 
 async function runOpSupportLimitsTests() {
-  const os = $('#os');
+  const legend = $('#legend');
   const backend = $('#backend');
   const backendStatus = $('#backend-status');
 	const opSupportLimits = $('#op-support-limits');
@@ -2983,8 +2983,10 @@ async function runOpSupportLimitsTests() {
               window.lastBackendDetection = backendInfo;
             }
             console.log('WebNN backend detection:', backendInfo);
-            os.innerHTML = `${backendInfo.os.name} ${backendInfo.os.version}`;
-            backend.innerHTML = backendInfo.backend;
+            if(backendInfo.backend) {
+              legend.setAttribute('class', 'legend');
+            }
+            backend.innerHTML = `${backendInfo.os.name} ${backendInfo.backend}`;
             backendStatus.setAttribute('title', `Confidence: ${capitalizeFirstLetter(backendInfo.confidence)}`);
             backendStatus.setAttribute('class', backendInfo.confidence);
             updateOpSupportLimits(opSupport);

@@ -131,7 +131,7 @@ function buildOpSupportLimitsGrid() {
     row.appendChild(opCell);
 
     const labelCell = document.createElement('div');
-    const labelText = label || 'value';
+    const labelText = label || '';
     labelCell.title = labelText;
     labelCell.textContent = labelText;
     row.appendChild(labelCell);
@@ -169,9 +169,9 @@ function buildOpSupportLimitsGrid() {
     }
 
     const globalSections = [
-      { key: 'constant', label: 'value' },
-      { key: 'input', label: 'value' },
-      { key: 'output', label: 'value' }
+      { key: 'constant', label: '' },
+      { key: 'input', label: '' },
+      { key: 'output', label: '' }
     ];
 
       let card = document.getElementById('#backend');
