@@ -2548,10 +2548,6 @@ if (typeof window !== 'undefined') {
   window.dispatchEvent(new CustomEvent('opSupportLimitsSpecReady'));
 }
 
-function getOSandVersion() {
-
-}
-
 let lastOpSupportLimits = null;
 
 let osInfoPromise = null;
@@ -2715,7 +2711,10 @@ function determineCandidateBackends(osInfo) {
       break;
     case 'macos': {
       const isAppleSilicon = (osInfo.architecture || '').toLowerCase().includes('arm');
-      if (isAppleSilicon && versionAtLeast(osInfo.version, '14.4')) {
+      // if (isAppleSilicon && versionAtLeast(osInfo.version, '14.4')) {
+      //   order.push('coreml');
+      // }
+      if (isAppleSilicon) {
         order.push('coreml');
       }
       order.push('tflite');
@@ -2987,7 +2986,7 @@ async function runOpSupportLimitsTests() {
               legend.setAttribute('class', 'legend');
             }
             backend.innerHTML = `${backendInfo.os.name} ${backendInfo.backend}`;
-            backendStatus.setAttribute('title', `Confidence: ${capitalizeFirstLetter(backendInfo.confidence)}`);
+            backendStatus.setAttribute('title', `Confidence: ${capitalizeFirstLetter(backendInfo.confidence)}; Possible backend: ${backendInfo.candidates.join(', ')}`);
             backendStatus.setAttribute('class', backendInfo.confidence);
             updateOpSupportLimits(opSupport);
 		} catch (error) {
