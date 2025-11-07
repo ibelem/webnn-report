@@ -28,6 +28,7 @@
   --pass-01: rgba(156, 230, 57, 0.1);
   --fail: rgba(255, 0, 129, 0.4);
   --border: rgb(229, 230, 232);
+  --border-05: rgba(229, 230, 232, 0.5);
   --purple: rgba(94, 77, 215, 1);
 }
 
@@ -129,6 +130,30 @@ header {
   border: 2px solid var(--pass);
   border-radius: 100%;
   box-shadow: rgba(0, 0, 0, 0.05) 0px 1px 1px 0px;
+}
+
+#op-support-limits .row span.io {
+  background-color: transparent;
+  border: 1px dotted var(--border-05);
+  box-shadow: none;
+  width: auto;
+  height: auto;
+  padding: 0px 4px;
+  border-radius: 3px;
+  display: inline-flex;
+  align-items: center;
+}
+
+#op-support-limits .row span.io_1 {
+    background-color: transparent;
+  border: 1px solid transparent;
+  box-shadow: none;
+  width: auto;
+  height: auto;
+  padding: 0px 4px;
+  border-radius: 3px;
+  display: inline-flex;
+  align-items: center;
 }
 
 .op-support-limits-unique {
@@ -320,7 +345,7 @@ header {
 }
 
 #op-support-limits .row>div:first-child + div {
-  min-width: 60px;
+  /* min-width: 60px; */
 }
 
 .visibility-hidden {

@@ -133,7 +133,17 @@ function buildOpSupportLimitsGrid() {
     const labelCell = document.createElement('div');
     const labelText = label || '';
     labelCell.title = labelText;
-    labelCell.textContent = labelText;
+    let labelValue = labelText;
+    if(labelText.toLowerCase() === 'input') {
+      labelValue = `<span class="io" title="${labelText}">i</span>`;
+    }
+    if(labelText.toLowerCase() === 'output') {
+      labelValue = `<span class="io" title="${labelText}">o</span>`;
+    }
+    if(labelText.length === 1) {
+      labelValue = `<span class="io_1" title="${labelText}">${labelText}</span>`;
+    }
+    labelCell.innerHTML = labelValue;
     row.appendChild(labelCell);
 
     const idPrefix = `${opName}${sectionName ? `-${sectionName}` : ''}`;
