@@ -506,6 +506,9 @@ footer {
 }
 
 .legend div div {
+  display: flex;
+  align-items: center;
+  column-gap: 4px;
   background-color: #fff;
   border-radius: 15px;
   padding: 3px 8px;
