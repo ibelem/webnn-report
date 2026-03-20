@@ -204,7 +204,7 @@ registerStressTests('security-stride-overflow', [
             dilations: [65536, 65536],
           });
         });
-      } catch (e) { /* expected: should throw not crash */ }
+      } catch (e) { console.warn('WebNN validation error (expected):', e); }
     },
     timeout: 15000,
   },
@@ -220,7 +220,7 @@ registerStressTests('security-stride-overflow', [
             new Float32Array([1]));
           return builder.conv2d(input, filter);
         });
-      } catch (e) { /* expected */ }
+      } catch (e) { console.warn('WebNN validation error (expected):', e); }
     },
     timeout: 15000,
   },
@@ -236,7 +236,7 @@ registerStressTests('security-stride-overflow', [
           const reshaped = builder.reshape(input, [1, 1073741824]);
           return builder.slice(reshaped, [0, 0], [1, 1]);
         });
-      } catch (e) { /* expected */ }
+      } catch (e) { console.warn('WebNN validation error (expected):', e); }
     },
     timeout: 15000,
   },
@@ -253,7 +253,7 @@ registerStressTests('security-stride-overflow', [
           });
           return builder.transpose(input, { permutation: [5, 4, 3, 2, 1, 0] });
         });
-      } catch (e) { /* expected */ }
+      } catch (e) { console.warn('WebNN validation error (expected):', e); }
     },
     timeout: 15000,
   },
@@ -272,7 +272,7 @@ registerStressTests('security-stride-overflow', [
             [2, 2, 2, 1],
             { strides: [1, 1, 1, INT32_MAX] });
         });
-      } catch (e) { /* expected */ }
+      } catch (e) { console.warn('WebNN validation error (expected):', e); }
     },
     timeout: 15000,
   },
@@ -299,7 +299,7 @@ registerStressTests('security-index-oob', [
                             -2147483648, -1, 0, -2147483648, -1, 0]));
           return builder.gatherElements(input, indices, { axis: 1 });
         });
-      } catch (e) { /* expected — must not OOB */ }
+      } catch (e) { console.warn('WebNN validation error (expected):', e); }
     },
   },
   // Guide Section 4, Case E: conv2d with kernel larger than input
@@ -317,7 +317,7 @@ registerStressTests('security-index-oob', [
             new Float32Array(49).fill(1.0));
           return builder.conv2d(input, filter, { padding: [0, 0, 0, 0] });
         });
-      } catch (e) { /* expected: should throw, not crash */ }
+      } catch (e) { console.warn('WebNN validation error (expected):', e); }
     },
   },
   // convTranspose2d with outputPadding that creates invalid output shape
@@ -338,7 +338,7 @@ registerStressTests('security-index-oob', [
             outputPadding: [100, 100],
           });
         });
-      } catch (e) { /* expected */ }
+      } catch (e) { console.warn('WebNN validation error (expected):', e); }
     },
   },
   // Guide Section 4, Case A: gather OOB with INT32_MAX index
@@ -355,7 +355,7 @@ registerStressTests('security-index-oob', [
             new Int32Array([0, 3, INT32_MAX]));
           return builder.gather(input, indices, { axis: 0 });
         });
-      } catch (e) { /* expected */ }
+      } catch (e) { console.warn('WebNN validation error (expected):', e); }
     },
   },
   // gatherND with partial out-of-bounds index
@@ -372,7 +372,7 @@ registerStressTests('security-index-oob', [
             new Int32Array([9999, 0]));
           return builder.gatherND(input, indices);
         });
-      } catch (e) { /* expected */ }
+      } catch (e) { console.warn('WebNN validation error (expected):', e); }
     },
   },
   // scatterND with index that escapes tensor bounds
@@ -392,7 +392,7 @@ registerStressTests('security-index-oob', [
             new Float32Array([1.0]));
           return builder.scatterND(input, indices, updates);
         });
-      } catch (e) { /* expected */ }
+      } catch (e) { console.warn('WebNN validation error (expected):', e); }
     },
   },
 ]);
@@ -531,6 +531,7 @@ registerStressTests('security-backend-switching', [
           powerPreference: 'low-power',
         });
       } catch (e) {
+        console.warn('Failed to create low-power context; falling back to shared context:', e);
         lowPowerCtx = ctx; // fall back to the shared context
       }
       try {
@@ -566,6 +567,7 @@ registerStressTests('security-backend-switching', [
           powerPreference: 'high-performance',
         });
       } catch (e) {
+        console.warn('Failed to create high-performance context; falling back to shared context:', e);
         hiPerfCtx = ctx;
       }
       try {
@@ -600,6 +602,7 @@ registerStressTests('security-backend-switching', [
           powerPreference: 'low-power',
         });
       } catch (e) {
+        console.warn('Failed to create low-power context; falling back to shared context:', e);
         lowPowerCtx = ctx;
       }
       try {
@@ -632,6 +635,7 @@ registerStressTests('security-backend-switching', [
           powerPreference: 'high-performance',
         });
       } catch (e) {
+        console.warn('Failed to create high-performance context; falling back to shared context:', e);
         hiPerfCtx = ctx;
       }
       try {
@@ -664,6 +668,7 @@ registerStressTests('security-backend-switching', [
           powerPreference: 'low-power',
         });
       } catch (e) {
+        console.warn('powerPreference not supported; skipping test:', e);
         return; // skip if powerPreference not supported
       }
       try {
