@@ -15,7 +15,8 @@ const idlTests = [
 			try {
 				const ctx = await navigator.ml.createContext({ powerPreference: 'default' });
 				return !!ctx;
-			} catch {
+			} catch (e) {
+				console.warn('IDL test "powerPreference: default" failed:', e);
 				return false;
 			}
 		}
@@ -28,7 +29,8 @@ const idlTests = [
 			try {
 				const ctx = await navigator.ml.createContext({ powerPreference: 'high-performance' });
 				return !!ctx;
-			} catch {
+			} catch (e) {
+				console.warn('IDL test "powerPreference: high-performance" failed:', e);
 				return false;
 			}
 		}
@@ -41,7 +43,8 @@ const idlTests = [
 			try {
 				const ctx = await navigator.ml.createContext({ powerPreference: 'low-power' });
 				return !!ctx;
-			} catch {
+			} catch (e) {
+				console.warn('IDL test "powerPreference: low-power" failed:', e);
 				return false;
 			}
 		}
@@ -60,7 +63,8 @@ const idlTests = [
 			try {
 				const ctx = await navigator.ml.createContext();
 				return typeof ctx.dispatch === 'function';
-			} catch {
+			} catch (e) {
+				console.warn('IDL test "MLContext.dispatch" failed:', e);
 				return false;
 			}
 		}
@@ -73,7 +77,8 @@ const idlTests = [
 			try {
 				const ctx = await navigator.ml.createContext();
 				return typeof ctx.createTensor === 'function';
-			} catch {
+			} catch (e) {
+				console.warn('IDL test "MLContext.createTensor" failed:', e);
 				return false;
 			}
 		}
@@ -86,7 +91,8 @@ const idlTests = [
 			try {
 				const ctx = await navigator.ml.createContext();
 				return typeof ctx.createConstantTensor === 'function';
-			} catch {
+			} catch (e) {
+				console.warn('IDL test "MLContext.createConstantTensor" failed:', e);
 				return false;
 			}
 		}
@@ -99,7 +105,8 @@ const idlTests = [
 			try {
 				const ctx = await navigator.ml.createContext();
 				return typeof ctx.readTensor === 'function';
-			} catch {
+			} catch (e) {
+				console.warn('IDL test "MLContext.readTensor" failed:', e);
 				return false;
 			}
 		}
@@ -112,7 +119,8 @@ const idlTests = [
 			try {
 				const ctx = await navigator.ml.createContext();
 				return typeof ctx.writeTensor === 'function';
-			} catch {
+			} catch (e) {
+				console.warn('IDL test "MLContext.writeTensor" failed:', e);
 				return false;
 			}
 		}
@@ -125,7 +133,8 @@ const idlTests = [
 			try {
 				const ctx = await navigator.ml.createContext();
 				return typeof ctx.opSupportLimits === 'function';
-			} catch {
+			} catch (e) {
+				console.warn('IDL test "MLContext.opSupportLimits" failed:', e);
 				return false;
 			}
 		}
@@ -138,7 +147,8 @@ const idlTests = [
 			try {
 				const ctx = await navigator.ml.createContext();
 				return typeof ctx.destroy === 'function';
-			} catch {
+			} catch (e) {
+				console.warn('IDL test "MLContext.destroy" failed:', e);
 				return false;
 			}
 		}
@@ -151,7 +161,8 @@ const idlTests = [
 			try {
 				const ctx = await navigator.ml.createContext();
 				return 'lost' in ctx;
-			} catch {
+			} catch (e) {
+				console.warn('IDL test "MLContext.lost" failed:', e);
 				return false;
 			}
 		}
@@ -336,7 +347,8 @@ async function runIdlTests() {
 			let supported;
 			try {
 				supported = test.test.constructor.name === 'AsyncFunction' ? await test.test() : test.test();
-			} catch {
+			} catch (e) {
+				console.warn(`IDL test "${test.name}" threw an unexpected error:`, e);
 				supported = false;
 			}
 			let resultElement = '<span class="na"></span>';

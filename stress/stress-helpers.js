@@ -11,23 +11,29 @@ const FLOAT32_MIN_NORMAL = 1.1754943508222875e-38;
 
 // Helper to build, dispatch, and read a single-output graph.
 // Throws on error, which is expected for adversarial tests.
+// Graph and output tensor are always destroyed after use.
 async function buildAndExecute(context, buildFn) {
   const builder = new MLGraphBuilder(context);
   const outputOperand = buildFn(builder);
   const graph = await builder.build({ output: outputOperand });
   const outputDesc = { dataType: outputOperand.dataType, shape: Array.from(outputOperand.shape) };
-  const size = outputDesc.shape.reduce((a, b) => a * b, 1);
   const outputTensor = await context.createTensor({
     dataType: outputDesc.dataType,
     shape: outputDesc.shape,
     readable: true,
   });
-  context.dispatch(graph, {}, { output: outputTensor });
-  const result = await context.readTensor(outputTensor);
-  return { result, outputDesc };
+  try {
+    context.dispatch(graph, {}, { output: outputTensor });
+    const result = await context.readTensor(outputTensor);
+    return { result, outputDesc };
+  } finally {
+    outputTensor.destroy();
+    graph.destroy();
+  }
 }
 
 // Build + dispatch with named inputs (writable tensors).
+// All tensors and the graph are always destroyed after use.
 async function buildAndExecuteWithInputs(context, inputSpecs, buildFn) {
   const builder = new MLGraphBuilder(context);
   const inputs = {};
@@ -57,9 +63,15 @@ async function buildAndExecuteWithInputs(context, inputSpecs, buildFn) {
     readable: true,
   });
 
-  context.dispatch(graph, inputTensors, { output: outputTensor });
-  const result = await context.readTensor(outputTensor);
-  return { result, outputDesc };
+  try {
+    context.dispatch(graph, inputTensors, { output: outputTensor });
+    const result = await context.readTensor(outputTensor);
+    return { result, outputDesc };
+  } finally {
+    for (const t of Object.values(inputTensors)) t.destroy();
+    outputTensor.destroy();
+    graph.destroy();
+  }
 }
 
 // Creates a Float32Array filled with a specific value.

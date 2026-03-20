@@ -203,26 +203,34 @@ registerStressTests('zero-dim', [
   {
     name: 'createTensor with shape [0]',
     run: async (ctx) => {
+      let tensor;
       try {
-        const tensor = await ctx.createTensor({
+        tensor = await ctx.createTensor({
           dataType: 'float32', shape: [0],
           readable: true, writable: true,
         });
         ctx.writeTensor(tensor, new Float32Array(0));
         await ctx.readTensor(tensor);
       } catch (e) { /* expected */ }
+      finally {
+        if (tensor) tensor.destroy();
+      }
     },
   },
   {
     name: 'createTensor with shape [4, 0, 4]',
     run: async (ctx) => {
+      let tensor;
       try {
-        const tensor = await ctx.createTensor({
+        tensor = await ctx.createTensor({
           dataType: 'float32', shape: [4, 0, 4],
           readable: true,
         });
         await ctx.readTensor(tensor);
       } catch (e) { /* expected */ }
+      finally {
+        if (tensor) tensor.destroy();
+      }
     },
   },
 ]);

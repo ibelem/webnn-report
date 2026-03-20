@@ -13,18 +13,23 @@ registerStressTests('context', [
       const graph = await builder.build({ output });
       const outputTensor = await ctx.createTensor({ dataType: 'float32', shape: [4], readable: true });
 
-      // Destroy then dispatch
-      const ctx2 = await navigator.ml.createContext({ deviceType: DEVICE });
-      const builder2 = new MLGraphBuilder(ctx2);
-      const in2 = builder2.constant({ dataType: 'float32', shape: [4] }, new Float32Array([1, 2, 3, 4]));
-      const out2 = builder2.relu(in2);
-      const graph2 = await builder2.build({ output: out2 });
-      const ot2 = await ctx2.createTensor({ dataType: 'float32', shape: [4], readable: true });
-      ctx2.destroy();
       try {
-        ctx2.dispatch(graph2, {}, { output: ot2 });
-        await ctx2.readTensor(ot2);
-      } catch (e) { /* expected */ }
+        // Destroy then dispatch — the ctx2 graph/tensors are freed by ctx2.destroy()
+        const ctx2 = await navigator.ml.createContext({ deviceType: DEVICE });
+        const builder2 = new MLGraphBuilder(ctx2);
+        const in2 = builder2.constant({ dataType: 'float32', shape: [4] }, new Float32Array([1, 2, 3, 4]));
+        const out2 = builder2.relu(in2);
+        const graph2 = await builder2.build({ output: out2 });
+        const ot2 = await ctx2.createTensor({ dataType: 'float32', shape: [4], readable: true });
+        ctx2.destroy();
+        try {
+          ctx2.dispatch(graph2, {}, { output: ot2 });
+          await ctx2.readTensor(ot2);
+        } catch (e) { /* expected */ }
+      } finally {
+        outputTensor.destroy();
+        graph.destroy();
+      }
     },
   },
   {
@@ -40,6 +45,9 @@ registerStressTests('context', [
         ctx.dispatch(graph, {}, { output: outputTensor });
         await ctx.readTensor(outputTensor);
       } catch (e) { /* expected */ }
+      finally {
+        outputTensor.destroy();
+      }
     },
   },
   {
@@ -141,15 +149,25 @@ registerStressTests('context', [
       const output = builder.relu(input);
       const graph = await builder.build({ output });
 
+      const inTensors = [];
+      const outTensors = [];
       const promises = [];
-      for (let i = 0; i < 10; i++) {
-        const inT = await ctx.createTensor({ dataType: 'float32', shape: [256], writable: true });
-        const outT = await ctx.createTensor({ dataType: 'float32', shape: [256], readable: true });
-        ctx.writeTensor(inT, filledFloat32([256], i));
-        ctx.dispatch(graph, { input: inT }, { output: outT });
-        promises.push(ctx.readTensor(outT));
+      try {
+        for (let i = 0; i < 10; i++) {
+          const inT = await ctx.createTensor({ dataType: 'float32', shape: [256], writable: true });
+          const outT = await ctx.createTensor({ dataType: 'float32', shape: [256], readable: true });
+          inTensors.push(inT);
+          outTensors.push(outT);
+          ctx.writeTensor(inT, filledFloat32([256], i));
+          ctx.dispatch(graph, { input: inT }, { output: outT });
+          promises.push(ctx.readTensor(outT));
+        }
+        await Promise.all(promises);
+      } finally {
+        for (const t of inTensors) t.destroy();
+        for (const t of outTensors) t.destroy();
+        graph.destroy();
       }
-      await Promise.all(promises);
     },
     timeout: 30000,
   },
@@ -198,8 +216,13 @@ registerStressTests('graphComplex', [
       for (const key of Object.keys(outputs)) {
         tensors[key] = await ctx.createTensor({ dataType: 'float32', shape: [16], readable: true });
       }
-      ctx.dispatch(graph, {}, tensors);
-      await ctx.readTensor(tensors.o0);
+      try {
+        ctx.dispatch(graph, {}, tensors);
+        await ctx.readTensor(tensors.o0);
+      } finally {
+        for (const t of Object.values(tensors)) t.destroy();
+        graph.destroy();
+      }
     },
     timeout: 30000,
   },
@@ -251,14 +274,18 @@ registerStressTests('graphComplex', [
   {
     name: 'readTensor on freshly created writable tensor (uninitialized)',
     run: async (ctx) => {
+      let tensor;
       try {
-        const tensor = await ctx.createTensor({
+        tensor = await ctx.createTensor({
           dataType: 'float32', shape: [256],
           readable: true, writable: true,
         });
         const result = await ctx.readTensor(tensor);
         // result may contain garbage — should not crash
       } catch (e) { /* expected if read before dispatch */ }
+      finally {
+        if (tensor) tensor.destroy();
+      }
     },
   },
   {
@@ -272,9 +299,9 @@ registerStressTests('graphComplex', [
         dataType: 'float32', shape: [64], writable: true });
       const outputTensor = await ctx.createTensor({
         dataType: 'float32', shape: [64], readable: true });
-      ctx.writeTensor(inputTensor, randomFloat32([64]));
-      // Fire two dispatches simultaneously — potential race condition
       try {
+        ctx.writeTensor(inputTensor, randomFloat32([64]));
+        // Fire two dispatches simultaneously — potential race condition
         const p1 = (async () => {
           ctx.dispatch(graph, { input: inputTensor }, { output: outputTensor });
           await ctx.readTensor(outputTensor);
@@ -285,6 +312,11 @@ registerStressTests('graphComplex', [
         })();
         await Promise.allSettled([p1, p2]);
       } catch (e) { /* race should not crash */ }
+      finally {
+        inputTensor.destroy();
+        outputTensor.destroy();
+        graph.destroy();
+      }
     },
   },
   {
@@ -315,7 +347,7 @@ registerStressTests('graphComplex', [
         const input = builder.constant({ dataType: 'float32', shape: [4] }, randomFloat32([4]));
         const output = builder.relu(input);
         const graph = await builder.build({ output });
-        // graph goes out of scope immediately
+        graph.destroy();
       }
     },
     timeout: 30000,

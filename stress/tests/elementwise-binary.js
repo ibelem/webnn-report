@@ -137,11 +137,18 @@ for (const opName of kElementwiseBinaryOps) {
         const tA = await ctx.createTensor({ dataType: 'float32', shape, writable: true });
         const tB = await ctx.createTensor({ dataType: 'float32', shape, writable: true });
         const tOut = await ctx.createTensor({ dataType: 'float32', shape, readable: true });
-        for (let i = 0; i < 50; i++) {
-          ctx.writeTensor(tA, filledFloat32(shape, i));
-          ctx.writeTensor(tB, filledFloat32(shape, -i));
-          ctx.dispatch(graph, { a: tA, b: tB }, { output: tOut });
-          await ctx.readTensor(tOut);
+        try {
+          for (let i = 0; i < 50; i++) {
+            ctx.writeTensor(tA, filledFloat32(shape, i));
+            ctx.writeTensor(tB, filledFloat32(shape, -i));
+            ctx.dispatch(graph, { a: tA, b: tB }, { output: tOut });
+            await ctx.readTensor(tOut);
+          }
+        } finally {
+          tA.destroy();
+          tB.destroy();
+          tOut.destroy();
+          graph.destroy();
         }
       },
       timeout: 30000,

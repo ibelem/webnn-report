@@ -2993,6 +2993,7 @@ async function runOpSupportLimitsTests() {
 			console.warn('Failed to read op support limits:', error);
 		}
 	} catch (error) {
+		console.warn('Failed to create WebNN context for op support limits:', error);
 		if (opSupportLimits) {
 			opSupportLimits.textContent = 'Failed to create context';
 			opSupportLimits.setAttribute('class', 'fail');
@@ -3003,6 +3004,7 @@ async function runOpSupportLimitsTests() {
 		const cpuContext = await navigator.ml.createContext({ deviceType: 'cpu' });
 		contexts.cpu = cpuContext;
   } catch (error) {
+    console.warn('Failed to create CPU context:', error);
     contexts.cpu = null;
   }
 
@@ -3010,6 +3012,7 @@ async function runOpSupportLimitsTests() {
 		const gpuContext = await navigator.ml.createContext({ deviceType: 'gpu' });
 		contexts.gpu = gpuContext;
   } catch (error) {
+    console.warn('Failed to create GPU context:', error);
     contexts.gpu = null;
   }
 
@@ -3017,6 +3020,7 @@ async function runOpSupportLimitsTests() {
 		const npuContext = await navigator.ml.createContext({ deviceType: 'npu' });
 		contexts.npu = npuContext;
   } catch (error) {
+    console.warn('Failed to create NPU context:', error);
     contexts.npu = null;
   }
 

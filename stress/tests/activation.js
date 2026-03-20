@@ -101,10 +101,16 @@ for (const opName of kActivationOps) {
         const graph = await builder.build({ output });
         const tI = await ctx.createTensor({ dataType: 'float32', shape: [256], writable: true });
         const tO = await ctx.createTensor({ dataType: 'float32', shape: [256], readable: true });
-        for (let i = 0; i < 50; i++) {
-          ctx.writeTensor(tI, adversarialFloat32([256]));
-          ctx.dispatch(graph, { input: tI }, { output: tO });
-          await ctx.readTensor(tO);
+        try {
+          for (let i = 0; i < 50; i++) {
+            ctx.writeTensor(tI, adversarialFloat32([256]));
+            ctx.dispatch(graph, { input: tI }, { output: tO });
+            await ctx.readTensor(tO);
+          }
+        } finally {
+          tI.destroy();
+          tO.destroy();
+          graph.destroy();
         }
       },
       timeout: 30000,

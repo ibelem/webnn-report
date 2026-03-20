@@ -189,10 +189,16 @@ for (const opName of kElementwiseUnaryOps) {
           dataType: 'float32', shape: [256], writable: true });
         const outputTensor = await ctx.createTensor({
           dataType: 'float32', shape: [256], readable: true });
-        for (let i = 0; i < 100; i++) {
-          ctx.writeTensor(inputTensor, filledFloat32([256], i * 0.01));
-          ctx.dispatch(graph, { input: inputTensor }, { output: outputTensor });
-          await ctx.readTensor(outputTensor);
+        try {
+          for (let i = 0; i < 100; i++) {
+            ctx.writeTensor(inputTensor, filledFloat32([256], i * 0.01));
+            ctx.dispatch(graph, { input: inputTensor }, { output: outputTensor });
+            await ctx.readTensor(outputTensor);
+          }
+        } finally {
+          inputTensor.destroy();
+          outputTensor.destroy();
+          graph.destroy();
         }
       },
       timeout: 30000,
