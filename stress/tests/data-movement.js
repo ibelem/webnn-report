@@ -252,8 +252,13 @@ registerStressTests('split', [
       for (const key of Object.keys(named)) {
         tensors[key] = await ctx.createTensor({ dataType: 'float32', shape: [1], readable: true });
       }
-      ctx.dispatch(graph, {}, tensors);
-      await ctx.readTensor(tensors.o0);
+      try {
+        ctx.dispatch(graph, {}, tensors);
+        await ctx.readTensor(tensors.o0);
+      } finally {
+        for (const t of Object.values(tensors)) t.destroy();
+        graph.destroy();
+      }
     },
     timeout: 30000,
   },
@@ -266,8 +271,14 @@ registerStressTests('split', [
       const graph = await builder.build({ o0: outputs[0], o1: outputs[1] });
       const t0 = await ctx.createTensor({ dataType: 'float32', shape: [15], readable: true });
       const t1 = await ctx.createTensor({ dataType: 'float32', shape: [15], readable: true });
-      ctx.dispatch(graph, {}, { o0: t0, o1: t1 });
-      await ctx.readTensor(t0);
+      try {
+        ctx.dispatch(graph, {}, { o0: t0, o1: t1 });
+        await ctx.readTensor(t0);
+      } finally {
+        t0.destroy();
+        t1.destroy();
+        graph.destroy();
+      }
     },
   },
 ]);

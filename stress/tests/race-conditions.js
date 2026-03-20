@@ -20,25 +20,32 @@ registerStressTests('race-conditions', [
         outputs.push(await ctx.createTensor({
           dataType: 'float32', shape: [64], readable: true }));
       }
-      const promises = outputs.map(async (outT) => {
-        ctx.dispatch(graph, { input: inputTensor }, { output: outT });
-        return ctx.readTensor(outT);
-      });
-      await Promise.allSettled(promises);
+      try {
+        const promises = outputs.map(async (outT) => {
+          ctx.dispatch(graph, { input: inputTensor }, { output: outT });
+          return ctx.readTensor(outT);
+        });
+        await Promise.allSettled(promises);
+      } finally {
+        inputTensor.destroy();
+        for (const t of outputs) t.destroy();
+        graph.destroy();
+      }
     },
     timeout: 30000,
   },
   {
     name: 'writeTensor during dispatch (race on input)',
     run: async (ctx) => {
+      let graph, inputTensor, outputTensor;
       try {
         const builder = new MLGraphBuilder(ctx);
         const input = builder.input('input', { dataType: 'float32', shape: [256] });
         const output = builder.relu(input);
-        const graph = await builder.build({ output });
-        const inputTensor = await ctx.createTensor({
+        graph = await builder.build({ output });
+        inputTensor = await ctx.createTensor({
           dataType: 'float32', shape: [256], writable: true });
-        const outputTensor = await ctx.createTensor({
+        outputTensor = await ctx.createTensor({
           dataType: 'float32', shape: [256], readable: true });
         ctx.writeTensor(inputTensor, randomFloat32([256]));
         ctx.dispatch(graph, { input: inputTensor }, { output: outputTensor });
@@ -46,19 +53,25 @@ registerStressTests('race-conditions', [
         ctx.writeTensor(inputTensor, filledFloat32([256], NaN));
         await ctx.readTensor(outputTensor);
       } catch (e) { /* should not crash */ }
+      finally {
+        if (inputTensor) inputTensor.destroy();
+        if (outputTensor) outputTensor.destroy();
+        if (graph) graph.destroy();
+      }
     },
   },
   {
     name: 'readTensor during dispatch (race on output)',
     run: async (ctx) => {
+      let graph, inputTensor, outputTensor;
       try {
         const builder = new MLGraphBuilder(ctx);
         const input = builder.input('input', { dataType: 'float32', shape: [256] });
         const output = builder.relu(input);
-        const graph = await builder.build({ output });
-        const inputTensor = await ctx.createTensor({
+        graph = await builder.build({ output });
+        inputTensor = await ctx.createTensor({
           dataType: 'float32', shape: [256], writable: true });
-        const outputTensor = await ctx.createTensor({
+        outputTensor = await ctx.createTensor({
           dataType: 'float32', shape: [256], readable: true, writable: true });
         ctx.writeTensor(inputTensor, randomFloat32([256]));
         ctx.dispatch(graph, { input: inputTensor }, { output: outputTensor });
@@ -66,6 +79,11 @@ registerStressTests('race-conditions', [
         const p = ctx.readTensor(outputTensor);
         await p;
       } catch (e) { /* should not crash */ }
+      finally {
+        if (inputTensor) inputTensor.destroy();
+        if (outputTensor) outputTensor.destroy();
+        if (graph) graph.destroy();
+      }
     },
   },
   {
@@ -83,7 +101,7 @@ registerStressTests('race-conditions', [
           dataType: 'float32', shape: [256], readable: true });
         ctx2.writeTensor(inputTensor, randomFloat32([256]));
         ctx2.dispatch(graph, { input: inputTensor }, { output: outputTensor });
-        // Destroy context immediately
+        // Destroy context immediately (also frees all its tensors and graphs)
         ctx2.destroy();
       } catch (e) { /* should not crash */ }
     },
@@ -99,10 +117,16 @@ registerStressTests('race-conditions', [
         dataType: 'float32', shape: [64], writable: true });
       const outputTensor = await ctx.createTensor({
         dataType: 'float32', shape: [64], readable: true });
-      for (let i = 0; i < 100; i++) {
-        ctx.writeTensor(inputTensor, filledFloat32([64], i * 0.01));
-        ctx.dispatch(graph, { input: inputTensor }, { output: outputTensor });
-        await ctx.readTensor(outputTensor);
+      try {
+        for (let i = 0; i < 100; i++) {
+          ctx.writeTensor(inputTensor, filledFloat32([64], i * 0.01));
+          ctx.dispatch(graph, { input: inputTensor }, { output: outputTensor });
+          await ctx.readTensor(outputTensor);
+        }
+      } finally {
+        inputTensor.destroy();
+        outputTensor.destroy();
+        graph.destroy();
       }
     },
     timeout: 30000,
@@ -124,10 +148,18 @@ registerStressTests('race-conditions', [
         dataType: 'float32', shape: [64], readable: true });
       const out2 = await ctx.createTensor({
         dataType: 'float32', shape: [64], readable: true });
-      ctx.writeTensor(sharedInput, randomFloat32([64]));
-      ctx.dispatch(graph1, { input: sharedInput }, { output: out1 });
-      ctx.dispatch(graph2, { input: sharedInput }, { output: out2 });
-      await Promise.all([ctx.readTensor(out1), ctx.readTensor(out2)]);
+      try {
+        ctx.writeTensor(sharedInput, randomFloat32([64]));
+        ctx.dispatch(graph1, { input: sharedInput }, { output: out1 });
+        ctx.dispatch(graph2, { input: sharedInput }, { output: out2 });
+        await Promise.all([ctx.readTensor(out1), ctx.readTensor(out2)]);
+      } finally {
+        sharedInput.destroy();
+        out1.destroy();
+        out2.destroy();
+        graph1.destroy();
+        graph2.destroy();
+      }
     },
   },
   {
@@ -151,13 +183,14 @@ registerStressTests('race-conditions', [
     name: 'multiple contexts interleaved dispatch',
     run: async (ctx) => {
       const ctx2 = await navigator.ml.createContext({ deviceType: DEVICE });
+      let g1, g2, in1, out1;
       try {
         const b1 = new MLGraphBuilder(ctx);
         const b2 = new MLGraphBuilder(ctx2);
-        const g1 = await b1.build({ output: b1.relu(b1.input('x', { dataType: 'float32', shape: [8] })) });
-        const g2 = await b2.build({ output: b2.relu(b2.input('x', { dataType: 'float32', shape: [8] })) });
-        const in1 = await ctx.createTensor({ dataType: 'float32', shape: [8], writable: true });
-        const out1 = await ctx.createTensor({ dataType: 'float32', shape: [8], readable: true });
+        g1 = await b1.build({ output: b1.relu(b1.input('x', { dataType: 'float32', shape: [8] })) });
+        g2 = await b2.build({ output: b2.relu(b2.input('x', { dataType: 'float32', shape: [8] })) });
+        in1 = await ctx.createTensor({ dataType: 'float32', shape: [8], writable: true });
+        out1 = await ctx.createTensor({ dataType: 'float32', shape: [8], readable: true });
         const in2 = await ctx2.createTensor({ dataType: 'float32', shape: [8], writable: true });
         const out2 = await ctx2.createTensor({ dataType: 'float32', shape: [8], readable: true });
         ctx.writeTensor(in1, randomFloat32([8]));
@@ -166,6 +199,10 @@ registerStressTests('race-conditions', [
         ctx2.dispatch(g2, { x: in2 }, { output: out2 });
         await Promise.all([ctx.readTensor(out1), ctx2.readTensor(out2)]);
       } finally {
+        if (in1) in1.destroy();
+        if (out1) out1.destroy();
+        if (g1) g1.destroy();
+        // ctx2.destroy() also frees g2, in2, out2
         ctx2.destroy();
       }
     },

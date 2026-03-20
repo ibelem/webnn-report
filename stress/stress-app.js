@@ -250,6 +250,7 @@
     }
 
     await runTestSet(stressTests, context);
+    context.destroy();
     running = false;
   }
 
@@ -296,6 +297,7 @@
       }
       await runSingleTest(opTests[i], i, context);
     }
+    context.destroy();
     running = false;
   }
 

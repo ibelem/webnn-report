@@ -7,8 +7,9 @@ registerStressTests('uninitialized-memory', [
   {
     name: 'readTensor on writable tensor before any writeTensor',
     run: async (ctx) => {
+      let tensor;
       try {
-        const tensor = await ctx.createTensor({
+        tensor = await ctx.createTensor({
           dataType: 'float32', shape: [256],
           readable: true, writable: true,
         });
@@ -16,13 +17,17 @@ registerStressTests('uninitialized-memory', [
         const result = await ctx.readTensor(tensor);
         // result should exist and not crash
       } catch (e) { /* expected: may throw */ }
+      finally {
+        if (tensor) tensor.destroy();
+      }
     },
   },
   {
     name: 'readTensor on writable tensor before dispatch',
     run: async (ctx) => {
+      let tensor;
       try {
-        const tensor = await ctx.createTensor({
+        tensor = await ctx.createTensor({
           dataType: 'float32', shape: [64],
           readable: true, writable: true,
         });
@@ -30,6 +35,9 @@ registerStressTests('uninitialized-memory', [
         // Read without dispatch — should return the written data
         const result = await ctx.readTensor(tensor);
       } catch (e) { /* may throw */ }
+      finally {
+        if (tensor) tensor.destroy();
+      }
     },
   },
   {
@@ -43,36 +51,47 @@ registerStressTests('uninitialized-memory', [
         dataType: 'float32', shape: [64], writable: true });
       const outputTensor = await ctx.createTensor({
         dataType: 'float32', shape: [64], readable: true });
-      // Write NaN to input, dispatch
-      ctx.writeTensor(inputTensor, filledFloat32([64], NaN));
-      ctx.dispatch(graph, { input: inputTensor }, { output: outputTensor });
-      const result = await ctx.readTensor(outputTensor);
-      // result should be valid (NaN through relu = 0 or NaN)
+      try {
+        // Write NaN to input, dispatch
+        ctx.writeTensor(inputTensor, filledFloat32([64], NaN));
+        ctx.dispatch(graph, { input: inputTensor }, { output: outputTensor });
+        const result = await ctx.readTensor(outputTensor);
+        // result should be valid (NaN through relu = 0 or NaN)
+      } finally {
+        inputTensor.destroy();
+        outputTensor.destroy();
+        graph.destroy();
+      }
     },
   },
   {
     name: 'read large uninitialized tensor (1M floats)',
     run: async (ctx) => {
+      let tensor;
       try {
-        const tensor = await ctx.createTensor({
+        tensor = await ctx.createTensor({
           dataType: 'float32', shape: [1024 * 1024],
           readable: true, writable: true,
         });
         const result = await ctx.readTensor(tensor);
         // Should not contain data from other processes/contexts
       } catch (e) { /* expected: may throw */ }
+      finally {
+        if (tensor) tensor.destroy();
+      }
     },
     timeout: 30000,
   },
   {
     name: 'multiple uninitialized tensors (check for cross-contamination)',
     run: async (ctx) => {
+      let t1, t2;
       try {
-        const t1 = await ctx.createTensor({
+        t1 = await ctx.createTensor({
           dataType: 'float32', shape: [256],
           readable: true, writable: true,
         });
-        const t2 = await ctx.createTensor({
+        t2 = await ctx.createTensor({
           dataType: 'float32', shape: [256],
           readable: true, writable: true,
         });
@@ -83,30 +102,42 @@ registerStressTests('uninitialized-memory', [
         // Read t1 — should contain 42.0
         const r1 = await ctx.readTensor(t1);
       } catch (e) { /* may throw */ }
+      finally {
+        if (t1) t1.destroy();
+        if (t2) t2.destroy();
+      }
     },
   },
   {
     name: 'int32 uninitialized tensor read',
     run: async (ctx) => {
+      let tensor;
       try {
-        const tensor = await ctx.createTensor({
+        tensor = await ctx.createTensor({
           dataType: 'int32', shape: [64],
           readable: true, writable: true,
         });
         const result = await ctx.readTensor(tensor);
       } catch (e) { /* expected */ }
+      finally {
+        if (tensor) tensor.destroy();
+      }
     },
   },
   {
     name: 'uint8 uninitialized tensor read',
     run: async (ctx) => {
+      let tensor;
       try {
-        const tensor = await ctx.createTensor({
+        tensor = await ctx.createTensor({
           dataType: 'uint8', shape: [256],
           readable: true, writable: true,
         });
         const result = await ctx.readTensor(tensor);
       } catch (e) { /* expected */ }
+      finally {
+        if (tensor) tensor.destroy();
+      }
     },
   },
   {
@@ -122,16 +153,23 @@ registerStressTests('uninitialized-memory', [
         dataType: 'float32', shape: [8], readable: true });
       const outB = await ctx.createTensor({
         dataType: 'float32', shape: [8], readable: true });
-      ctx.writeTensor(inputTensor, filledFloat32([8], 1.0));
-      // Dispatch to outA
-      ctx.dispatch(graph, { input: inputTensor }, { output: outA });
-      await ctx.readTensor(outA);
-      // Dispatch to outB (outA should still hold old data)
-      ctx.writeTensor(inputTensor, filledFloat32([8], 2.0));
-      ctx.dispatch(graph, { input: inputTensor }, { output: outB });
-      await ctx.readTensor(outB);
-      // Read outA again — should still have old result
-      await ctx.readTensor(outA);
+      try {
+        ctx.writeTensor(inputTensor, filledFloat32([8], 1.0));
+        // Dispatch to outA
+        ctx.dispatch(graph, { input: inputTensor }, { output: outA });
+        await ctx.readTensor(outA);
+        // Dispatch to outB (outA should still hold old data)
+        ctx.writeTensor(inputTensor, filledFloat32([8], 2.0));
+        ctx.dispatch(graph, { input: inputTensor }, { output: outB });
+        await ctx.readTensor(outB);
+        // Read outA again — should still have old result
+        await ctx.readTensor(outA);
+      } finally {
+        inputTensor.destroy();
+        outA.destroy();
+        outB.destroy();
+        graph.destroy();
+      }
     },
   },
 ]);
