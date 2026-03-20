@@ -29,6 +29,7 @@ const stressTestFiles = [
   '../tests/slice-stride.js',
   '../tests/quantization-roundtrip.js',
   '../tests/precision-chains.js',
+  '../tests/security-focused.js',
 ];
 
 // Load all test scripts sequentially (order matters for registration).
