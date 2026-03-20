@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description"
+    content="WebNN adversarial stress tests targeting crash, security and vulnerability issues on GPU backend.">
+  <meta name="author" content="Belem Zhang">
+  <meta name="robots" content="noindex, nofollow">
+  <title>WebNN Stress · GPU</title>
+  <link rel="stylesheet" href="../../static/css/font.css">
+  <link rel="stylesheet" href="../stress.css">
+</head>
+
+<body>
+  <header>
+    <div id="title">
+      <a href="../../">
+        <svg width="734" height="146" viewBox="0 0 734 146" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path
+            d="M269.016 103.288C273.283 103.288 276.739 104.589 279.384 107.192C282.029 109.752 283.352 113.464 283.352 118.328V139H277.592V119.16C277.592 115.661 276.717 112.995 274.968 111.16C273.219 109.283 270.829 108.344 267.8 108.344C264.728 108.344 262.275 109.304 260.44 111.224C258.648 113.144 257.752 115.939 257.752 119.608V139H251.928V103.928H257.752V108.92C258.904 107.128 260.461 105.741 262.424 104.76C264.429 103.779 266.627 103.288 269.016 103.288Z"
+            fill="rgba(94, 77, 215, 1)" />
+          <circle cx="15" cy="68" r="15" fill="rgba(94, 77, 215, 1)" />
+          <circle cx="75" cy="25" r="15" fill="rgba(94, 77, 215, 1)" />
+          <circle cx="163" cy="38" r="15" fill="rgba(94, 77, 215, 1)" />
+        </svg>
+      </a>
+      <div>WebNN Stress Tests</div>
+    </div>
+    <div id="device-info">
+      <span class="device-badge gpu">GPU</span>
+      <span id="browser"></span>
+      <span id="chromium"></span>
+    </div>
+  </header>
+  <div id="controls">
+    <div id="summary">
+      <span id="count-total">0</span> tests ·
+      <span id="count-pass" class="pass-text">0</span> pass ·
+      <span id="count-fail" class="fail-text">0</span> fail ·
+      <span id="count-skip" class="skip-text">0</span> skip ·
+      <span id="count-running" class="running-text">0</span> running
+    </div>
+    <div id="actions">
+      <button id="btn-run-all">Run All</button>
+      <button id="btn-stop">Stop</button>
+
+    </div>
+    <div id="progress-bar"><div id="progress-fill"></div></div>
+  </div>
+  <div id="op-nav"></div>
+  <div id="results"></div>
+  <footer>
+    <div class="copy">&copy;2025 Web Neural Network · WebNN API · Stress Tests</div>
+  </footer>
+  <script>const DEVICE = 'gpu';</script>
+  <script src="../../static/js/utils.js"></script>
+  <script src="../stress-runner.js"></script>
+  <script src="../stress-helpers.js"></script>
+  <script src="../stress-tests.js"></script>
+  <script src="../stress-app.js"></script>
+</body>
+
+</html>

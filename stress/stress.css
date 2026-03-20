@@ -1,0 +1,291 @@
+:root {
+  --base-100: oklch(98% 0.02 240);
+  --base-200: oklch(95% 0.03 240);
+  --base-300: oklch(92% 0.04 240);
+  --base-content: oklch(20% 0.05 240);
+  --primary: rgba(94, 77, 215, 1);
+  --primary-content: oklch(98% 0.01 240);
+  --neutral: oklch(50% 0.05 240);
+  --success: rgba(156, 230, 57, 0.8);
+  --success-bg: rgba(156, 230, 57, 0.1);
+  --error: oklch(64.561% 0.26065 2.142);
+  --error-bg: rgba(255, 0, 129, 0.08);
+  --warning: oklch(80% 0.25 80);
+  --skip: rgba(120, 120, 120, 0.6);
+  --skip-bg: rgba(120, 120, 120, 0.06);
+  --main-bg: rgba(244, 244, 244, 1);
+  --main: oklch(10.832% 0.00701 285.155);
+  --border: rgb(229, 230, 232);
+  --purple: rgba(94, 77, 215, 1);
+  --card-bg: #fff;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  font-family: 'Intel One Mono', 'JetBrains Mono', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  background-color: var(--main-bg);
+  color: var(--main);
+  font-size: 0.85rem;
+  margin: 0;
+  padding: 0;
+}
+
+a { color: var(--primary); text-decoration: none; }
+a:hover { text-decoration: underline; }
+
+header {
+  padding: 10px 16px;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  border-bottom: 1px solid var(--border);
+}
+
+#title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 1.1rem;
+  color: var(--primary);
+  font-weight: 600;
+}
+
+#title svg {
+  width: 40px;
+  height: 40px;
+}
+
+#device-info {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 0.8rem;
+}
+
+.device-badge {
+  display: inline-block;
+  padding: 2px 12px;
+  border-radius: 12px;
+  font-weight: 700;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+.device-badge.cpu { background: #e8e0ff; color: var(--primary); }
+.device-badge.gpu { background: #d4f5d4; color: #1a7a1a; }
+.device-badge.npu { background: #ffe0cc; color: #b35900; }
+
+#controls {
+  padding: 10px 16px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+  border-bottom: 1px solid var(--border);
+  background: var(--card-bg);
+}
+
+#summary {
+  font-size: 0.8rem;
+  display: flex;
+  gap: 4px;
+  flex-wrap: wrap;
+}
+.pass-text { color: #3a8a0a; font-weight: 600; }
+.fail-text { color: var(--error); font-weight: 600; }
+.skip-text { color: var(--skip); font-weight: 600; }
+.running-text { color: var(--primary); font-weight: 600; }
+
+#actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-left: auto;
+}
+
+#actions button {
+  padding: 4px 14px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--card-bg);
+  cursor: pointer;
+  font-size: 0.78rem;
+  font-family: inherit;
+  transition: background 0.15s;
+}
+
+#actions button:hover { background: var(--base-200); }
+#btn-run-all { border-color: var(--primary); color: var(--primary); font-weight: 600; }
+
+#actions label {
+  font-size: 0.75rem;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  cursor: pointer;
+}
+
+#progress-bar {
+  width: 100%;
+  height: 4px;
+  background: var(--base-200);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+#progress-fill {
+  height: 100%;
+  width: 0;
+  background: var(--primary);
+  transition: width 0.2s;
+  border-radius: 2px;
+}
+
+#op-nav {
+  padding: 8px 16px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  border-bottom: 1px solid var(--border);
+  background: var(--card-bg);
+  font-size: 0.7rem;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+#op-nav a {
+  padding: 2px 6px;
+  border-radius: 4px;
+  color: var(--main);
+  white-space: nowrap;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  cursor: pointer;
+  user-select: none;
+}
+#op-nav a:hover {
+  background: var(--base-200);
+  text-decoration: none;
+}
+#op-nav a.active { background: var(--primary); color: #fff; }
+#op-nav a.active .tab-badge { background: rgba(255,255,255,0.25); color: #fff; }
+
+.tab-label { pointer-events: none; }
+.tab-badge {
+  font-size: 0.6rem;
+  font-weight: 600;
+  padding: 0 4px;
+  border-radius: 8px;
+  background: var(--base-200);
+  color: var(--neutral);
+  min-width: 16px;
+  text-align: center;
+  pointer-events: none;
+}
+.tab-badge.all-pass { background: var(--success-bg); color: #3a8a0a; }
+.tab-badge.has-fail { background: var(--error-bg); color: var(--error); }
+
+#results {
+  padding: 10px 16px;
+}
+
+.op-group {
+  display: none;
+  margin-bottom: 16px;
+}
+.op-group.active {
+  display: block;
+}
+
+.op-group-header {
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: var(--primary);
+  padding: 6px 0 4px 0;
+  border-bottom: 2px solid var(--primary);
+  margin-bottom: 6px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.op-group-header .op-count {
+  font-size: 0.7rem;
+  font-weight: 400;
+  color: var(--neutral);
+}
+
+.op-group-header button {
+  margin-left: auto;
+  padding: 2px 10px;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  background: var(--card-bg);
+  cursor: pointer;
+  font-size: 0.7rem;
+  font-family: inherit;
+}
+.op-group-header button:hover { background: var(--base-200); }
+
+.test-row {
+  display: grid;
+  grid-template-columns: 80px 1fr 80px;
+  align-items: center;
+  padding: 3px 8px;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  gap: 8px;
+  min-height: 28px;
+}
+
+.test-row:nth-child(even) { background: rgba(0,0,0,0.015); }
+.test-row.pass { background: var(--success-bg); }
+.test-row.fail { background: var(--error-bg); }
+.test-row.skip { background: var(--skip-bg); }
+
+.test-row .test-status {
+  font-weight: 600;
+  text-transform: uppercase;
+  font-size: 0.65rem;
+  letter-spacing: 0.3px;
+}
+
+.test-row.pass .test-status { color: #3a8a0a; }
+.test-row.fail .test-status { color: var(--error); }
+.test-row.skip .test-status { color: var(--skip); }
+.test-row.running .test-status { color: var(--primary); }
+
+.test-row .test-name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.test-row .test-time {
+  text-align: right;
+  font-size: 0.65rem;
+  color: var(--neutral);
+}
+
+.test-row .test-error {
+  grid-column: 1 / -1;
+  font-size: 0.7rem;
+  color: var(--error);
+  word-break: break-all;
+  padding: 2px 0;
+}
+
+footer {
+  text-align: center;
+  font-size: 0.75rem;
+  color: var(--neutral);
+  padding: 16px;
+  font-family: Archivo, 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+}
